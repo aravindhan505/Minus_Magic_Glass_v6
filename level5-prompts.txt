@@ -1,0 +1,75 @@
+# Level 5: Image Classification — Image Generation Prompts
+# ==========================================================
+# Generate these using Zimage Turbo (or similar AI image tool).
+# All images should be in CARTOON/ILLUSTRATION style matching the retro arcade theme.
+# Dark backgrounds preferred (deep purple/navy) to match the app theme.
+#
+# ==========================================================
+
+# ─── Category Images (Main Display) ──────────────────────
+# These are the images the child classifies by adjusting sliders.
+# Display size: ~300x300px on screen, but generate at 512x512 for quality.
+
+level5-cat.png
+  Dimensions: 512x512
+  Prompt: "Cute cartoon cat sitting, big eyes, colorful fur, simple bold outlines, dark purple space background with stars, retro arcade style, kids illustration, vibrant colors, no text"
+  Category: Animal
+  Display size: 300x300
+
+level5-car.png
+  Dimensions: 512x512
+  Prompt: "Bright red cartoon car, simple bold design, shiny, side view, dark purple space background with stars, retro arcade style, kids illustration, vibrant colors, no text"
+  Category: Vehicle
+  Display size: 300x300
+
+level5-pizza.png
+  Dimensions: 512x512
+  Prompt: "Delicious cartoon pizza slice with melting cheese and pepperoni, simple bold outlines, dark purple space background with stars, retro arcade style, kids illustration, vibrant colors, no text"
+  Category: Food
+  Display size: 300x300
+
+level5-rocket.png
+  Dimensions: 512x512
+  Prompt: "Colorful cartoon rocket ship flying through space, flames coming out the back, simple bold outlines, dark purple space background with stars and planets, retro arcade style, kids illustration, vibrant colors, no text"
+  Category: Space
+  Display size: 300x300
+
+level5-flower.png
+  Dimensions: 512x512
+  Prompt: "Beautiful cartoon flower with colorful petals, green stem and leaves, simple bold outlines, dark purple space background with stars, retro arcade style, kids illustration, vibrant colors, no text"
+  Category: Nature
+  Display size: 300x300
+
+# ─── Quiz Images ──────────────────────────────────────────
+# Used in the visual choice quiz question.
+# Display size: ~200x200px, generate at 256x256.
+
+level5-quiz-cat.png
+  Dimensions: 256x256
+  Prompt: "Cute cartoon cat face close-up, big eyes, colorful, simple bold outlines, dark background, retro arcade style, kids illustration"
+  Category: Animal (correct answer)
+
+level5-quiz-car.png
+  Dimensions: 256x256
+  Prompt: "Bright red cartoon car front view, simple bold design, dark background, retro arcade style, kids illustration"
+  Category: Vehicle (wrong answer)
+
+level5-quiz-pizza.png
+  Dimensions: 256x256
+  Prompt: "Cartoon pizza slice, simple bold outlines, dark background, retro arcade style, kids illustration"
+  Category: Food (wrong answer)
+
+# ─── Placeholder Notes ────────────────────────────────────
+# While waiting for real images, the module uses styled colored rectangles
+# with category emoji as placeholders:
+#   Animal  → 🐱 (purple card)
+#   Vehicle → 🚗 (blue card)
+#   Food    → 🍕 (orange card)
+#   Space   → 🚀 (dark blue card)
+#   Nature  → 🌿 (green card)
+#
+# To swap in real images later:
+# 1. Place the PNG files in public/images/level5/
+# 2. Update the image paths in components/level-5-image-classification.tsx
+#
+# ==========================================================

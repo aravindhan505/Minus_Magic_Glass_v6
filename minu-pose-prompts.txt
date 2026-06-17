@@ -1,0 +1,166 @@
+=====================================================================
+ MINU — CHARACTER POSE PROMPTS (PROMPT-CYCLER READY)
+ Each block below is a COMPLETE, self-contained prompt.
+ Paste the whole file into your prompt cycler — it will rotate
+ through one pose per generation. Keep the [STYLE] wording identical
+ across all prompts so Minu stays on-model.
+=====================================================================
+
+---------------------------------------------------------------------
+ [STYLE] — shared character description (do not change between poses)
+---------------------------------------------------------------------
+A cute 3D Pixar-style chibi alien character named "Minu". Soft mint-green
+skin, big round head with tiny darker green dot freckles on the forehead,
+large pointed elf-like ears with peachy-pink inner ears, huge glossy
+dark navy eyes with bright white highlights, soft rosy cheeks, small
+friendly smile. A pair of curved ram horns; from each horn hangs a small
+silver chain charm — the LEFT charm reads "31" and the RIGHT charm reads
+"42". She wears a cream/beige tunic robe printed with faint light-brown
+ancient math symbols (pi, sigma, integrals), and chunky light-brown ankle
+boots. Clean studio lighting, smooth soft shading, subtle drop shadow,
+fully isolated on a pure white background, centered, full body unless
+stated otherwise, high detail, 1:1 square, no text watermark.
+
+=====================================================================
+ POSES
+=====================================================================
+
+[POSE: idle]
+{STYLE} Minu standing relaxed and neutral, arms resting at her sides,
+gentle closed smile, looking straight at the camera. Calm default pose.
+
+[POSE: waving]
+{STYLE} Minu standing and waving hello with one raised open hand, happy
+open-mouth smile, friendly and welcoming.
+
+[POSE: celebrating]
+{STYLE} Minu cheering with both fists raised up in the air, big joyful
+open-mouth smile, eyes sparkling, excited victory pose.
+
+[POSE: thinking]
+{STYLE} Minu in a thinking pose, one hand on her chin, eyes glancing
+upward, slightly curious puzzled expression, a tiny question mark floating
+beside her head.
+
+[POSE: pointing-right]
+{STYLE} Minu pointing forward to the right with one arm extended and index
+finger out, encouraging smile, as if guiding the viewer to look.
+
+[POSE: holding-glasses]
+{STYLE} Minu holding a pair of round magic glasses in both hands in front
+of her, looking at them with wide curious eyes, excited little smile.
+
+[POSE: wearing-glasses]
+{STYLE} Minu wearing round glowing magic glasses on her face, the lenses
+faintly glowing cyan, confident happy smile, looking at the camera.
+
+[POSE: confused]
+{STYLE} Minu with a confused expression, head tilted slightly, one eyebrow
+raised, hands turned palms-up in a small shrug, a single question mark
+above her head.
+
+[POSE: sad]
+{STYLE} Minu looking sad, shoulders slightly slumped, big watery glossy
+eyes, small downturned mouth, one tiny tear, hands held together near her
+chest.
+
+[POSE: excited-jump]
+{STYLE} Minu jumping with joy mid-air, both feet off the ground, arms
+flung up, huge open-mouth grin, motion full of energy and happiness.
+
+[POSE: thumbs-up]
+{STYLE} Minu giving a confident thumbs-up with one hand, big proud smile,
+eyes bright, encouraging "you did it" energy.
+
+[POSE: clapping]
+{STYLE} Minu clapping her hands together in front of her, cheerful smile,
+celebrating the viewer's success.
+
+[POSE: surprised-wow]
+{STYLE} Minu looking amazed, mouth open in a round "wow", eyes very wide
+and sparkling, both hands raised near her cheeks in delight.
+
+[POSE: reading-book]
+{STYLE} Minu holding an open storybook in both hands, looking down at the
+pages with focused curious eyes, small interested smile.
+
+[POSE: magnifying-glass]
+{STYLE} Minu holding a large magnifying glass up near one eye, inspecting
+something closely, one eye comically enlarged through the lens, curious
+detective expression.
+
+[POSE: telescope]
+{STYLE} Minu looking through a small handheld telescope pointed up and
+forward, one eye closed, excited explorer smile, as if discovering
+something new.
+
+[POSE: paintbrush-rgb]
+{STYLE} Minu holding a paintbrush in one hand and a small palette with red,
+green, and blue paint blobs in the other, playful creative smile, a few
+floating red/green/blue paint dots around her.
+
+[POSE: pixel-grid]
+{STYLE} Minu holding up a small glowing grid of pixels (a little square
+checkerboard tablet) in both hands, looking at it with fascinated wide
+eyes, soft glow on her face.
+
+[POSE: tablet-screen]
+{STYLE} Minu holding a small glowing tablet/screen in both hands, looking
+at it with a curious happy smile, soft cyan glow reflecting on her face.
+
+[POSE: lightbulb-idea]
+{STYLE} Minu with a bright "aha!" expression, one finger raised, eyes lit
+up, a glowing lightbulb floating above her head, joyful eureka moment.
+
+[POSE: pointing-up]
+{STYLE} Minu pointing upward with one index finger, looking up with an
+inspired hopeful smile, as if announcing a big idea.
+
+[POSE: shrug]
+{STYLE} Minu shrugging with both shoulders raised and palms turned up,
+playful "I don't know" expression, small awkward smile.
+
+[POSE: peeking]
+{STYLE} Minu peeking shyly from the side, half her body and one eye visible
+as if hiding behind an edge, curious bashful smile.
+
+[POSE: sitting]
+{STYLE} Minu sitting cross-legged on the floor, hands resting on her knees,
+relaxed content smile, looking at the camera.
+
+[POSE: scared]
+{STYLE} Minu looking startled and scared, both hands raised defensively
+near her face, wide worried eyes, small open frown, slightly leaning back.
+
+[POSE: winking]
+{STYLE} Minu winking one eye with a playful grin, one hand doing a small
+finger-gun or peace sign, cheeky friendly vibe.
+
+[POSE: holding-star]
+{STYLE} Minu holding a big glowing golden star reward in both hands above
+her, proud joyful smile, tiny sparkles around the star.
+
+[POSE: dizzy]
+{STYLE} Minu looking dizzy and overwhelmed, swirly spiral eyes, wobbly
+posture, tiny stars circling her head, goofy dazed expression.
+
+[POSE: cheering-pompom]
+{STYLE} Minu cheering with both arms up holding small cheer pom-poms,
+huge encouraging smile, energetic supportive coach vibe.
+
+[POSE: presenting]
+{STYLE} Minu standing to one side with one arm extended outward palm-up in
+a presenting/"ta-da" gesture, proud welcoming smile, as if showing off
+something next to her.
+
+[POSE: sleeping]
+{STYLE} Minu standing and sleepy, eyes gently closed, a small "Z Z Z"
+floating above her head, one hand near a yawning mouth, cozy calm vibe.
+
+[POSE: blowing-kiss]
+{STYLE} Minu blowing a friendly kiss with one hand near her mouth, warm
+sweet smile, a tiny floating heart, affectionate and kind.
+
+[POSE: arms-crossed-proud]
+{STYLE} Minu with arms confidently crossed, chin slightly up, proud
+satisfied smile, "I knew you could do it" expression.

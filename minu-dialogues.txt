@@ -1,0 +1,510 @@
+# Minu's Magic Glasses — Complete Dialogue List (v2)
+# ==================================================
+# TWO VOICES:
+#   1. NARRATOR — Teaches the child, explains concepts, guides actions
+#   2. MINU — Reacts emotionally, expresses confusion/surprise/gratitude
+#
+# PEDAGOGY:
+#   - Minu is an alien who sees the world as RAW NUMBERS (0-255)
+#   - She CANNOT see images like we do — only pixel values
+#   - The child helps calibrate her "magic glasses" so she can see properly
+#   - The Narrator teaches the child HOW to help Minu
+#   - Minu reacts with genuine emotion as she starts to "see" things
+#
+# VOICE DIRECTION:
+#   NARRATOR: Warm, friendly adult (think PBS/Blue's Clues host)
+#     - Speaks clearly and slightly slowly for ages 5-8
+#     - Encouraging, patient, enthusiastic
+#     - Never condescending
+#
+#   MINU: Childlike alien voice (higher pitch, slightly quirky)
+#     - Genuinely confused when she sees numbers
+#     - Excited and amazed when she starts to "see"
+#     - Grateful when the child helps her
+#     - A bit naive and innocent
+#
+# GENERATION GUIDANCE:
+#   - Format: MP3, 44.1kHz
+#   - Normalize all files to -3dB peak
+#   - Keep volume consistent across all files
+#   - Speed: Slightly slower than normal conversation
+#
+# FILE LOCATION: /public/audio/minu/
+# TOTAL FILES: 58 mp3 files
+# ==================================================
+
+
+# ============================================================
+# SECTION 1: NARRATOR — Game Introduction & Home Screen
+# ============================================================
+
+# --- First Time Welcome ---
+# [COMPLETED - Wired to home screen mount, first-time detection via localStorage]
+narrator_welcome_first_time.mp3
+  Voice: Narrator
+  Text: "Welcome to Minu's Magic Glasses! Minu is a friendly alien who sees the world differently than us — she only sees numbers! Let's help her calibrate her magic glasses so she can see like we do!"
+  Emotion: Warm, inviting, excited to begin
+
+# [COMPLETED - Wired to home screen mount, returning user detection via localStorage]
+narrator_welcome_return.mp3
+  Voice: Narrator
+  Text: "Welcome back! Minu's glasses still need more calibration. Let's help her see even better!"
+  Emotion: Glad to see you again, encouraging
+
+
+# --- Settings Narration ---
+# [COMPLETED - Wired to sound toggle in home screen (plays before mute)]
+narrator_sound_on.mp3
+  Voice: Narrator
+  Text: "Sound is on! You'll hear Minu's reactions and my voice guiding you."
+  Emotion: Clear, confirming
+
+# [COMPLETED - File exists but not wired (can't be heard after muting)]
+narrator_sound_off.mp3
+  Voice: Narrator
+  Text: "Sound is off. You can still read everything on screen. Turn sound back on anytime in Settings!"
+  Emotion: Neutral, helpful
+
+
+# --- Level Map Narration ---
+# [COMPLETED - Wired to calibration map mount via useEffect]
+narrator_map_explain.mp3
+  Voice: Narrator
+  Text: "Each planet is a different skill Minu needs to learn. Tap a planet to start helping Minu! The ones with a lock need you to finish the levels before them first."
+  Emotion: Guiding, clear, encouraging
+
+
+# ============================================================
+# SECTION 2: NARRATOR — Level Intros
+# Explains the concept to the child at the start of each level
+# ============================================================
+
+# --- Level 1: Numbers to Brightness ---
+narrator_level1_intro.mp3
+  Voice: Narrator
+  Text: "Minu sees everything as numbers! Bright pixels are high numbers, dark pixels are low numbers. Let's use the slider to help Minu understand brightness! Try moving it and watch the picture change!"
+  Emotion: Teaching, clear, engaging
+
+narrator_level1_instruction.mp3
+  Voice: Narrator
+  Text: "Tap on any pixel in the picture! You'll see its number. That's exactly what Minu sees — just numbers!"
+  Emotion: Encouraging, guiding
+
+narrator_level1_quiz.mp3
+  Voice: Narrator
+  Text: "Time to help Minu practice! Look at these two pictures. Which one is brighter?"
+  Emotion: Encouraging, playful
+
+narrator_level1_quiz_hands_on.mp3
+  Voice: Narrator
+  Text: "Now try this! Move the slider to make this dark picture match the bright one. You can do it!"
+  Emotion: Supportive, confident in the child
+
+
+# --- Level 2: Brightness in Color ---
+narrator_level2_intro.mp3
+  Voice: Narrator
+  Text: "Every color is made of just three colors — Red, Green, and Blue! Computers mix them to make every color you see. Minu sees each color as three separate numbers. Let's help her understand colors!"
+  Emotion: Sharing an exciting fact, teaching
+
+narrator_level2_instruction.mp3
+  Voice: Narrator
+  Text: "There are three sliders — one for Red, one for Green, one for Blue. Move each one and watch how the picture changes! Tap a pixel to see its three color numbers!"
+  Emotion: Guiding, encouraging exploration
+
+narrator_level2_quiz.mp3
+  Voice: Narrator
+  Text: "Let's test what you learned! Which slider makes the image more red?"
+  Emotion: Playful, encouraging
+
+narrator_level2_quiz_hands_on.mp3
+  Voice: Narrator
+  Text: "Mix the right colors to make this picture look like the original! Adjust the Red, Green, and Blue sliders!"
+  Emotion: Challenging but supportive
+
+
+# --- Level 3: Edge Detection ---
+narrator_level3_intro.mp3
+  Voice: Narrator
+  Text: "Edges are where things change really fast — like where a dark sky meets a bright star! Computers find these changes to understand shapes. Let's help Minu find edges!"
+  Emotion: Mysterious, exciting, detective-like
+
+narrator_level3_instruction.mp3
+  Voice: Narrator
+  Text: "Move the sensitivity slider to control how many edges the computer finds. Low sensitivity finds only strong edges. High sensitivity finds lots of edges! Tap on the edge image to see the difference!"
+  Emotion: Clear, guiding
+
+narrator_level3_quiz.mp3
+  Voice: Narrator
+  Text: "Which of these pictures has been edge-detected? Look for the one with just outlines!"
+  Emotion: Playful, encouraging
+
+narrator_level3_quiz_hands_on.mp3
+  Voice: Narrator
+  Text: "Adjust the slider to find the most edges in this picture! You're becoming a real detective!"
+  Emotion: Encouraging, proud
+
+
+# --- Level 4: Feature Recognition ---
+narrator_level4_intro.mp3
+  Voice: Narrator
+  Text: "Now that we can find edges, computers can group similar pixels into regions — like putting all the sky pixels together! Let's help Minu recognize shapes and regions!"
+  Emotion: Building on previous knowledge, connecting ideas
+
+narrator_level4_instruction.mp3
+  Voice: Narrator
+  Text: "Move the sliders to change how the computer groups pixels. See how the picture splits into different regions? Tap a region to see what the computer thinks it is!"
+  Emotion: Encouraging exploration, teaching
+
+narrator_level4_quiz.mp3
+  Voice: Narrator
+  Text: "How many regions can you see in this picture? Count them and pick the right answer!"
+  Emotion: Playful, encouraging
+
+narrator_level4_quiz_hands_on.mp3
+  Voice: Narrator
+  Text: "Adjust the sliders to split this image into exactly 3 regions. You're teaching the computer to group things!"
+  Emotion: Supportive, challenging
+
+
+# --- Level 5: Image Classification ---
+narrator_level5_intro.mp3
+  Voice: Narrator
+  Text: "This is the big finale! Computers use everything we learned — brightness, color, edges, and regions — to sort and name pictures! Let's help Minu classify images like a pro!"
+  Emotion: Grand, building excitement, proud of what they've learned
+
+narrator_level5_instruction.mp3
+  Voice: Narrator
+  Text: "Adjust the feature weights to help the computer focus on what's important. Is color more important? Or shape? Tap the image to see what the computer is looking at!"
+  Emotion: Guiding, encouraging
+
+narrator_level5_quiz.mp3
+  Voice: Narrator
+  Text: "What do you think this image is? Look carefully and pick the right category!"
+  Emotion: Encouraging, building confidence
+
+narrator_level5_quiz_hands_on.mp3
+  Voice: Narrator
+  Text: "Adjust the sliders to help the computer correctly classify this image. You've learned so much — I know you can do it!"
+  Emotion: Proud, confident, supportive
+
+
+# ============================================================
+# SECTION 3: NARRATOR — Quiz Feedback
+# ============================================================
+
+# [COMPLETED - Wired to Level 5 quiz (alternates randomly with amazing variant)]
+narrator_quiz_correct.mp3
+  Voice: Narrator
+  Text: "That's right! Great job helping Minu!"
+  Emotion: Proud, affirming
+
+# [COMPLETED - Wired to Level 5 quiz (alternates randomly with correct variant)]
+narrator_quiz_correct_amazing.mp3
+  Voice: Narrator
+  Text: "Amazing! You really understand this! Minu is so lucky to have you!"
+  Emotion: Impressed, celebratory
+
+# [COMPLETED - Wired to Level 5 quiz (alternates randomly with try variant)]
+narrator_quiz_incorrect.mp3
+  Voice: Narrator
+  Text: "Not quite! That's okay — let's try again. You're still learning!"
+  Emotion: Gentle, encouraging, not disappointed
+
+# [COMPLETED - Wired to Level 5 quiz (alternates randomly with incorrect variant)]
+narrator_quiz_incorrect_try.mp3
+  Voice: Narrator
+  Text: "Almost! You're close. Think about it and give it another try!"
+  Emotion: Supportive, patient
+
+
+# ============================================================
+# SECTION 4: NARRATOR — Level Complete & Celebration
+# ============================================================
+
+# [COMPLETED - Wired to page.tsx handleComplete (single level completion)]
+narrator_level_complete.mp3
+  Voice: Narrator
+  Text: "You did it! You helped Minu learn something new! Her glasses are getting clearer!"
+  Emotion: Celebratory, proud, warm
+
+# [COMPLETED - Wired to page.tsx handleComplete (all 5 levels completed)]
+narrator_all_complete.mp3
+  Voice: Narrator
+  Text: "Incredible! You helped Minu calibrate all five lenses! Her magic glasses are fully calibrated! Minu can now see the world like we do! What an amazing journey!"
+  Emotion: Peak celebration, proud, emotional
+
+
+# ============================================================
+# SECTION 5: MINU — Reactions & Emotional Responses
+# Minu reacts to what's happening as the child helps her
+# ============================================================
+
+# --- First Encounter ---
+minu_first_sees_numbers.mp3
+  Voice: Minu
+  Text: "Everything looks... weird? I only see numbers everywhere! What do these numbers mean? Can you help me?"
+  Emotion: Confused, slightly worried, reaching out for help
+
+minu_first_time_hello.mp3
+  Voice: Minu
+  Text: "Oh! Hi there! I'm Minu! I see the world differently — just numbers! Can you help me calibrate my magic glasses?"
+  Emotion: Friendly, hopeful, a little shy
+
+
+# --- Level Intros (Minu's reaction to each concept) ---
+minu_level1_sees_brightness.mp3
+  Voice: Minu
+  Text: "So... these numbers tell me how bright things are? Zero is dark and 255 is bright? That makes sense! But I still can't see the picture..."
+  Emotion: Thinking, processing, slightly confused
+
+minu_level2_sees_colors.mp3
+  Voice: Minu
+  Text: "Wait — every color is THREE numbers? Red, Green, and Blue? That's... a lot of numbers! How do they make all the colors?"
+  Emotion: Amazed, slightly overwhelmed, curious
+
+minu_level3_sees_edges.mp3
+  Voice: Minu
+  Text: "Edges? You mean where things change really fast? Like from dark to bright in one step? I think I see what you mean!"
+  Emotion: Realization, excited, connecting dots
+
+minu_level4_sees_regions.mp3
+  Voice: Minu
+  Text: "So computers group similar pixels together? Like putting all the blue sky pixels in one group? That's so smart!"
+  Emotion: Impressed, understanding, excited
+
+minu_level5_sees_classification.mp3
+  Voice: Minu
+  Text: "So all those things — brightness, color, edges, regions — they all work together to help computers understand pictures? Wow!"
+  Emotion: Amazed, proud of what they've learned together
+
+
+# --- Slider Reactions ---
+minu_slider_changing.mp3
+  Voice: Minu
+  Text: "Whoa! The numbers are changing! I can see something happening! Keep going!"
+  Emotion: Excited, engaged, encouraging
+
+minu_slider_extreme_dark.mp3
+  Voice: Minu
+  Text: "Everything is so dark! The numbers are all really low! I can barely see anything!"
+  Emotion: Squinting voice, slightly worried, confused
+
+minu_slider_extreme_bright.mp3
+  Voice: Minu
+  Text: "Aah! Too bright! The numbers are so high! My sensors are going crazy!"
+  Emotion: Surprised, shielding eyes, playful discomfort
+
+minu_slider_extreme_red.mp3
+  Voice: Minu
+  Text: "Whoa! Everything is red! The red number must be really high! I've never seen so much red!"
+  Emotion: Surprised, amazed, a little dizzy
+
+minu_slider_extreme_green.mp3
+  Voice: Minu
+  Text: "So much green! The green number is really high! It's like being inside a forest!"
+  Emotion: Surprised, delighted, playful
+
+minu_slider_extreme_blue.mp3
+  Voice: Minu
+  Text: "Everything is blue! The blue number is really high! It's like being underwater!"
+  Emotion: Surprised, amazed, playful
+
+minu_slider_extreme_white.mp3
+  Voice: Minu
+  Text: "Everything is white! All three numbers are at maximum! That's what happens when red, green, and blue are all 255!"
+  Emotion: Surprised, amazed, then understanding
+
+minu_slider_extreme_black.mp3
+  Voice: Minu
+  Text: "It's pitch black! All the numbers are zero! I can't see anything at all!"
+  Emotion: Surprised, slightly scared, then reassured
+
+
+# --- Pixel Inspector Reactions ---
+minu_pixel_tap_first.mp3
+  Voice: Minu
+  Text: "You tapped a pixel! What number is it? Can you read it to me? I want to know what it says!"
+  Emotion: Curious, excited, eager
+
+minu_pixel_tap_value.mp3
+  Voice: Minu
+  Text: "Ooh! What's that number? Is it high or low? Tell me, tell me!"
+  Emotion: Curious, playful, eager
+
+minu_pixel_tap_low.mp3
+  Voice: Minu
+  Text: "That number is really low! That means that pixel is dark, right? I'm starting to get it!"
+  Emotion: Thinking, understanding, proud
+
+minu_pixel_tap_high.mp3
+  Voice: Minu
+  Text: "That number is really high! That pixel must be really bright! I'm learning to see!"
+  Emotion: Excited, proud, grateful
+
+minu_pixel_edge_found.mp3
+  Voice: Minu
+  Text: "You found an edge! See how the numbers jump really fast there? That's where two different things meet!"
+  Emotion: Excited, detective-like, proud
+
+minu_pixel_region_labeled.mp3
+  Voice: Minu
+  Text: "You tapped a region! The computer grouped all those similar pixels together! That's how it starts to understand pictures!"
+  Emotion: Impressed, educational, encouraging
+
+
+# --- Quiz Reactions ---
+minu_quiz_correct.mp3
+  Voice: Minu
+  Text: "Yes! You got it! Thank you so much! I'm learning to see!"
+  Emotion: Proud, grateful, celebratory
+
+minu_quiz_correct_amazing.mp3
+  Voice: Minu
+  Text: "Wow! You're so smart! You really understand how this works! Thank you for helping me!"
+  Emotion: Impressed, grateful, joyful
+
+minu_quiz_incorrect.mp3
+  Voice: Minu
+  Text: "Hmm, I don't think that's right. But that's okay! We're still learning together!"
+  Emotion: Gentle, encouraging, not disappointed
+
+minu_quiz_incorrect_try.mp3
+  Voice: Minu
+  Text: "Almost! You're so close! Let's try one more time — I believe in you!"
+  Emotion: Supportive, patient, motivating
+
+
+# --- Level Complete ---
+minu_level_complete.mp3
+  Voice: Minu
+  Text: "You did it! I can see better now! My glasses are getting clearer! Thank you so much!"
+  Emotion: Overjoyed, grateful, triumphant
+
+minu_level_complete_glasses.mp3
+  Voice: Minu
+  Text: "Look! One of my glasses lenses is working now! I can see that part of the world! This is amazing!"
+  Emotion: Excited, amazed, grateful
+
+
+# --- All Levels Complete ---
+minu_all_complete.mp3
+  Voice: Minu
+  Text: "I can see! I can really see! All my glasses are calibrated! I can see the whole world now — colors, shapes, everything! Thank you for helping me! You're the best friend ever!"
+  Emotion: Overwhelmed with joy, grateful, emotional, triumphant
+
+
+# --- Encouragement ---
+minu_encouragement_keep_going.mp3
+  Voice: Minu
+  Text: "You're doing great! Keep going! I'm starting to see things more clearly!"
+  Emotion: Encouraging, hopeful, grateful
+
+minu_encouragement_try_slider.mp3
+  Voice: Minu
+  Text: "Try moving the slider! I want to see what happens! Please help me see!"
+  Emotion: Eager, curious, pleading playfully
+
+minu_encouragement_try_pixel.mp3
+  Voice: Minu
+  Text: "Tap on the picture! I want to know what that pixel's number is! Can you check for me?"
+  Emotion: Curious, inviting, playful
+
+
+# ============================================================
+# SECTION 6: MINU — Idle & Special Moments
+# ============================================================
+
+minu_idle_long_time.mp3
+  Voice: Minu
+  Text: "Hey! Are you still there? I'm still here! My glasses are waiting! Come back and help me see!"
+  Emotion: Friendly, patient, not pushy
+
+minu_coming_soon.mp3
+  Voice: Minu
+  Text: "This planet isn't ready yet! But it's going to be so cool! Come back soon!"
+  Emotion: Excited, teasing, playful
+
+minu_exit_warning.mp3
+  Voice: Minu
+  Text: "Wait! You haven't finished helping me yet! My glasses still need calibration! Come back soon, okay?"
+  Emotion: Worried, playful, encouraging return
+
+minu_settings_welcome.mp3
+  Voice: Minu
+  Text: "Hi! I'm Minu! Tap the Play button to start our adventure! I need your help!"
+  Emotion: Welcoming, hopeful, friendly
+
+
+# ============================================================
+# SUMMARY
+# ============================================================
+#
+# Total MP3 files: 58
+#
+# By Voice:
+#   NARRATOR: 28 files (teaches, guides, explains)
+#   MINU:     30 files (reacts emotionally, expresses feelings)
+#
+# By Section:
+#   Section 1 (Narrator - Intro/Settings):   5 files
+#   Section 2 (Narrator - Level Intros):     14 files
+#   Section 3 (Narrator - Quiz Feedback):     4 files
+#   Section 4 (Narrator - Complete):          2 files
+#   Section 5 (Minu - Reactions):            26 files
+#   Section 6 (Minu - Idle/Special):          5 files
+#
+# ============================================
+# WHERE TO PUT THE FILES
+# ============================================
+#
+# All mp3 files go in:  /public/audio/minu/
+#
+# Example paths:
+#   public/audio/minu/narrator_welcome_first_time.mp3
+#   public/audio/minu/minu_first_sees_numbers.mp3
+#   public/audio/minu/narrator_level1_intro.mp3
+#
+# ============================================
+# COMPLETION STATUS (June 17, 2026)
+# ============================================
+#
+# 11 of 58 narrator files are COMPLETED and wired into the app:
+#
+# Section 1 (Intro/Settings): 5 files
+#   ✅ narrator_welcome_first_time.mp3 → home screen (first-time)
+#   ✅ narrator_welcome_return.mp3 → home screen (returning)
+#   ✅ narrator_sound_on.mp3 → sound toggle on
+#   ✅ narrator_sound_off.mp3 → file exists (not wired, can't hear after mute)
+#   ✅ narrator_map_explain.mp3 → calibration map mount
+#
+# Section 2 (Level Intros): 0 files
+#   ❌ All 14 level intro files still needed
+#
+# Section 3 (Quiz Feedback): 4 files
+#   ✅ narrator_quiz_correct.mp3 → Level 5 quiz (alternating)
+#   ✅ narrator_quiz_correct_amazing.mp3 → Level 5 quiz (alternating)
+#   ✅ narrator_quiz_incorrect.mp3 → Level 5 quiz (alternating)
+#   ✅ narrator_quiz_incorrect_try.mp3 → Level 5 quiz (alternating)
+#
+# Section 4 (Level Complete): 2 files
+#   ✅ narrator_level_complete.mp3 → level completion
+#   ✅ narrator_all_complete.mp3 → all levels complete
+#
+# Section 5 (Minu Reactions): 0 files
+#   ❌ All 30 Minu dialogue files still needed
+#
+# Section 6 (Idle/Special): 0 files
+#   ❌ All 5 Minu idle files still needed
+#
+# ============================================
+# AUDIO SYSTEM IMPLEMENTATION
+# ============================================
+#
+# playNarratorFile() in lib/audio.ts handles MP3 playback:
+#   - Uses HTML5 Audio API
+#   - Respects voice volume slider
+#   - Mutes when sound toggle is off
+#   - Stops any current narrator before playing new line
+#
+# ============================================
