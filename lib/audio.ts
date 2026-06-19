@@ -231,6 +231,23 @@ export function playInspect(): void {
 
 let currentNarratorAudio: HTMLAudioElement | null = null
 let mapExplainPlayedThisSession = false
+let audioUnlockedFromGesture = false
+
+/** Tiny silent WAV — primes autoplay after a real tap/click (required on production HTTPS). */
+const SILENT_WAV =
+  "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"
+
+/**
+ * Call synchronously inside a user click/tap handler before starting narrator audio.
+ * Browsers block unprompted audio on deployed sites; localhost is more permissive.
+ */
+export function unlockAudioFromGesture(): void {
+  if (audioUnlockedFromGesture || typeof window === "undefined") return
+  audioUnlockedFromGesture = true
+  const primer = new Audio(SILENT_WAV)
+  primer.volume = 0
+  primer.play().catch(() => {})
+}
 
 export type NarratorPlaybackOptions = {
   /** Called when the clip finishes (or after a short fallback if the file is missing). */
@@ -274,7 +291,13 @@ export function playNarratorSrc(src: string, options?: NarratorPlaybackOptions):
   )
 
   currentNarratorAudio = audio
-  audio.play().catch(() => setTimeout(handleEnd, 2000))
+  const tryPlay = () => audio.play().catch(() => setTimeout(handleEnd, 2000))
+  if (audioUnlockedFromGesture) {
+    tryPlay()
+    return
+  }
+  // Wait briefly for a nearby tap/click unlock (e.g. Play → map mount).
+  setTimeout(tryPlay, 50)
 }
 
 /** Play a narrator MP3 file from /public/audio/minu/. */

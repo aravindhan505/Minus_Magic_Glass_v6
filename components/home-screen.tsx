@@ -11,6 +11,7 @@ import {
   playNarratorFile,
   temporarilyEnableSound,
   restoreSoundState,
+  unlockAudioFromGesture,
   MINU_VISITED_KEY,
   markMinuVisited,
 } from "@/lib/audio"
@@ -107,7 +108,7 @@ export function HomeScreen({
         <div className="flex flex-col items-center gap-3">
           <Button
             size="lg"
-            onClick={() => { playClick(); onPlay() }}
+            onClick={() => { unlockAudioFromGesture(); playClick(); onPlay() }}
             className="font-heading h-16 w-64 rounded-full text-2xl font-extrabold shadow-lg shadow-primary/30"
           >
             <Play className="size-7 fill-current" />
@@ -116,7 +117,7 @@ export function HomeScreen({
           <Button
             size="lg"
             variant="secondary"
-            onClick={() => { playClick(); onWatchIntro() }}
+            onClick={() => { unlockAudioFromGesture(); playClick(); onWatchIntro() }}
             className="font-heading rounded-full text-base font-bold"
           >
             <Film className="size-5" />

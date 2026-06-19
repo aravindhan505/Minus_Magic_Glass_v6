@@ -6,7 +6,7 @@ import { Glasses, Sparkles, SkipForward, Volume2, VolumeX } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { introVideo, minuPoses } from "@/lib/minu-config"
 import { Starfield } from "@/components/starfield"
-import { playClick } from "@/lib/audio"
+import { playClick, unlockAudioFromGesture } from "@/lib/audio"
 
 export function IntroScreen({ onFinish }: { onFinish: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -144,7 +144,7 @@ export function IntroScreen({ onFinish }: { onFinish: () => void }) {
 
         <Button
           size="lg"
-          onClick={() => { playClick(); onFinish() }}
+          onClick={() => { unlockAudioFromGesture(); playClick(); onFinish() }}
           className="font-heading rounded-full px-8 text-lg font-bold"
         >
           <SkipForward className="size-5" />

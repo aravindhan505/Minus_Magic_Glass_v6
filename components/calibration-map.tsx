@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { MinuSpaceshipFlyer } from "@/components/minu-spaceship-flyer"
 import { Starfield } from "@/components/starfield"
 import { levels, planetImages, type Level } from "@/lib/minu-config"
-import { playClick, playMapExplainOnce, playPlanetNarrator, stopNarrator } from "@/lib/audio"
+import { playClick, playMapExplainOnce, playPlanetNarrator, stopNarrator, unlockAudioFromGesture } from "@/lib/audio"
 import { cn } from "@/lib/utils"
 
 const PLANET_COUNT = levels.length
@@ -92,6 +92,7 @@ function PlanetSphere({
       type="button"
       disabled={isActive && isLocked}
       onClick={() => {
+        unlockAudioFromGesture()
         playClick()
         if (isActive && !isLocked) onStart()
         else onActivate()
@@ -258,6 +259,7 @@ export function CalibrationMap({
   const goTo = useCallback(
     (index: number) => {
       if (index < 0 || index >= levels.length || index === activeIndex || isTransitioning) return
+      unlockAudioFromGesture()
       playClick()
       stopNarrator()
       setIsTransitioning(true)
