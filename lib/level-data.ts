@@ -42,10 +42,14 @@ export type MinuReaction = {
 
 // ─── Quiz Questions ───────────────────────────────────────────
 
+export type VisualChoiceTransform = "rotate90" | "flipH" | "invert" | "tilt"
+
 export type VisualChoiceOption = {
   imageSrc: string
   label: string
   correct: boolean
+  /** CSS transform preview for CV transformation quiz items */
+  transform?: VisualChoiceTransform
 }
 
 export type QuizQuestion =
@@ -119,8 +123,8 @@ export type LevelModule = {
 export const defaultLevelConfigs: LevelConfig[] = [
   {
     id: 1,
-    slug: "numbers-to-brightness",
-    title: "Numbers to Brightness",
+    slug: "pixel-to-colors",
+    title: "Pixel to Colors",
     subtitle: "Level 1",
     description: "Teach Minu how computers store light as numbers.",
     color: "var(--chart-2)",
@@ -185,8 +189,8 @@ export const defaultLevelConfigs: LevelConfig[] = [
   },
   {
     id: 2,
-    slug: "brightness-in-color",
-    title: "Brightness in Color",
+    slug: "color-potion-time",
+    title: "Color Potion Time!",
     subtitle: "Level 2",
     description: "Red, Green and Blue make every colour Minu sees.",
     color: "var(--chart-1)",
@@ -402,79 +406,23 @@ export const defaultLevelConfigs: LevelConfig[] = [
   },
   {
     id: 5,
-    slug: "image-classification",
-    title: "Image Classification",
+    slug: "object-detection",
+    title: "Object Detection",
     subtitle: "Level 5",
-    description: "Teach Minu to sort pictures all on her own.",
+    description: "Teach Minu to spot and name objects in pictures.",
     color: "var(--chart-5)",
     icon: "Sparkles",
-    imageSrc: "/images/level5-classify.png",
-    referenceSrc: "/images/level5-categories.png",
-    sliders: [
-      {
-        id: "colorWeight",
-        label: "Color Importance",
-        min: 0,
-        max: 100,
-        defaultValue: 50,
-        color: "#ff4444",
-      },
-      {
-        id: "shapeWeight",
-        label: "Shape Importance",
-        min: 0,
-        max: 100,
-        defaultValue: 50,
-        color: "#4444ff",
-      },
-      {
-        id: "brightnessWeight",
-        label: "Brightness Importance",
-        min: 0,
-        max: 100,
-        defaultValue: 50,
-        color: "#e0e0e0",
-      },
-    ],
+    imageSrc: "/images/level5/characters/black_cat.png",
+    referenceSrc: "/images/level5/characters/red_rocket.png",
+    sliders: [],
     pixelInspectorEnabled: false,
     splitViewEnabled: false,
     minuReactions: [
-      {
-        trigger: "slider_extreme_max",
-        sliderId: "colorWeight",
-        pose: "surprised",
-        text: "Color is very important now!",
-      },
-      {
-        trigger: "slider_extreme_max",
-        sliderId: "shapeWeight",
-        pose: "surprised",
-        text: "Shape matters a lot!",
-      },
-      {
-        trigger: "slider_change",
-        pose: "thinking",
-      },
+      { trigger: "slider_change", pose: "thinking" },
     ],
-    quiz: [
-      {
-        type: "visual_choice",
-        question: "What do you think this image is?",
-        options: [
-          { imageSrc: "/images/quiz/q5-animal.png", label: "Animal", correct: true },
-          { imageSrc: "/images/quiz/q5-building.png", label: "Building", correct: false },
-          { imageSrc: "/images/quiz/q5-food.png", label: "Food", correct: false },
-        ],
-      },
-      {
-        type: "hands_on",
-        question: "Adjust the sliders to help Minu correctly classify this image!",
-        targetSliderValues: { colorWeight: 70, shapeWeight: 60, brightnessWeight: 30 },
-        tolerance: 20,
-      },
-    ],
+    quiz: [],
     introLine:
-      "Hi friend! Computers use everything we learned to sort and label pictures. Let's help Minu classify!",
+      "Find every picture that matches the reference — even if it's flipped or a different colour!",
     completionLine:
       "You did it! My magic glasses are fully calibrated! Now I can see the world!",
   },

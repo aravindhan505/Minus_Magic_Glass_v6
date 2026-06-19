@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { Check, X, ArrowRight, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { LevelSlider } from "@/components/ui/slider"
 import { SpeechBubble } from "@/components/speech-bubble"
 import { playClick, playFanfare, playError, playNarratorFile } from "@/lib/audio"
 import type { QuizQuestion } from "@/lib/level-data"
+import { TILE_TRANSFORM_CLASS } from "@/lib/level5-object-detection"
 import { cn } from "@/lib/utils"
 
 const QUIZ_PASS_PERCENT = 80
@@ -20,6 +21,24 @@ type LevelQuizProps = {
   onBack: () => void
   /** Called when the quiz is failed (< threshold correct) */
   onFail: () => void
+  /** Hide "Practice More" on fail — only show Retry Quiz (Level 5) */
+  retryOnlyOnFail?: boolean
+  /** Tighter layout for Level 5 (fits h-dvh without scroll) */
+  compact?: boolean
+  /** Override default 80% pass threshold (Level 5 Part 1 uses 67%) */
+  passPercent?: number
+  /** Custom success message on pass screen */
+  successMessage?: string
+  /** Optional narrator when a new question appears */
+  onQuestionStart?: () => void
+  /** Gate question narrator (e.g. wait for quiz intro to finish) */
+  questionNarratorEnabled?: boolean
+  /** Optional narrator when the pass results screen shows */
+  onPass?: () => void
+  /** Optional narrator when the fail results screen shows */
+  onQuizFail?: () => void
+  /** Picture-only options — hide text labels under each choice (Level 5) */
+  hideOptionLabels?: boolean
 }
 
 /**
@@ -27,8 +46,30 @@ type LevelQuizProps = {
  * Supports visual multiple choice and hands-on slider challenges.
  * Tracks score and only calls onComplete when the pass threshold is met.
  */
-export function LevelQuiz({ questions, onComplete, onBack, onFail }: LevelQuizProps) {
+export function LevelQuiz({
+  questions,
+  onComplete,
+  onBack,
+  onFail,
+  retryOnlyOnFail,
+  compact,
+  passPercent: passPercentThreshold = QUIZ_PASS_PERCENT,
+  successMessage = "You did it! Great job! Minu's glasses are calibrated! 🌟",
+  onQuestionStart,
+  questionNarratorEnabled = true,
+  onPass,
+  onQuizFail,
+  hideOptionLabels,
+}: LevelQuizProps) {
   const [currentQ, setCurrentQ] = useState(0)
+  const resultsNarratorPlayed = useRef(false)
+  const questionNarratorForQ = useRef(-1)
+  const onQuestionStartRef = useRef(onQuestionStart)
+  const onPassRef = useRef(onPass)
+  const onQuizFailRef = useRef(onQuizFail)
+  onQuestionStartRef.current = onQuestionStart
+  onPassRef.current = onPass
+  onQuizFailRef.current = onQuizFail
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [sliderValues, setSliderValues] = useState<Record<string, number>>({})
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null)
@@ -37,7 +78,21 @@ export function LevelQuiz({ questions, onComplete, onBack, onFail }: LevelQuizPr
 
   const question = questions[currentQ]
   const passPercent = Math.round((correctAnswers / questions.length) * 100)
-  const passed = passPercent >= QUIZ_PASS_PERCENT
+  const passed = passPercent >= passPercentThreshold
+
+  useEffect(() => {
+    if (allDone || !questionNarratorEnabled) return
+    if (questionNarratorForQ.current === currentQ) return
+    questionNarratorForQ.current = currentQ
+    onQuestionStartRef.current?.()
+  }, [currentQ, allDone, questionNarratorEnabled])
+
+  useEffect(() => {
+    if (!allDone || resultsNarratorPlayed.current) return
+    resultsNarratorPlayed.current = true
+    if (passed) onPassRef.current?.()
+    else onQuizFailRef.current?.()
+  }, [allDone, passed])
 
   const handleVisualChoice = (optionIndex: number) => {
     if (feedback) return
@@ -120,7 +175,7 @@ export function LevelQuiz({ questions, onComplete, onBack, onFail }: LevelQuizPr
               />
             </div>
           </div>
-          <SpeechBubble text="You did it! Great job! Minu's glasses are calibrated! 🌟" />
+          <SpeechBubble text={successMessage} />
           <Button
             onClick={onComplete}
             className="font-heading rounded-full px-8 font-bold text-lg animate-pulse"
@@ -151,18 +206,20 @@ export function LevelQuiz({ questions, onComplete, onBack, onFail }: LevelQuizPr
             />
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
-            You need {QUIZ_PASS_PERCENT}% to pass. Try again!
+            You need {passPercentThreshold}% to pass. Try again!
           </p>
         </div>
         <SpeechBubble text="Don't give up! Let's try the quiz again! 💪" />
         <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            onClick={onBack}
-            className="font-heading rounded-full px-6 font-bold"
-          >
-            <ArrowRight className="size-4 rotate-180" /> Practice More
-          </Button>
+          {!retryOnlyOnFail && (
+            <Button
+              variant="secondary"
+              onClick={onBack}
+              className="font-heading rounded-full px-6 font-bold"
+            >
+              <ArrowRight className="size-4 rotate-180" /> Practice More
+            </Button>
+          )}
           <Button
             onClick={onFail}
             className="font-heading rounded-full px-8 font-bold"
@@ -177,7 +234,12 @@ export function LevelQuiz({ questions, onComplete, onBack, onFail }: LevelQuizPr
   // ─── Question Screen ──────────────────────────────────
 
   return (
-    <div className="animate-pop-in flex w-full max-w-lg flex-col gap-6 rounded-3xl border border-border bg-card p-6">
+    <div
+      className={cn(
+        "animate-pop-in flex w-full max-w-lg flex-col rounded-3xl border border-border bg-card",
+        compact ? "max-h-full gap-3 overflow-y-auto p-4" : "gap-6 p-6",
+      )}
+    >
       {/* Progress indicator */}
       <div className="flex items-center gap-2">
         {questions.map((_, i) => (
@@ -204,21 +266,28 @@ export function LevelQuiz({ questions, onComplete, onBack, onFail }: LevelQuizPr
         </p>
       </div>
 
-      <p className="font-heading text-lg font-extrabold text-foreground text-balance">
+      <p
+        className={cn(
+          "font-heading font-extrabold text-foreground text-balance",
+          compact ? "text-base" : "text-lg",
+        )}
+      >
         {question.question}
       </p>
 
       {/* Visual choice options */}
       {question.type === "visual_choice" && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className={cn("grid grid-cols-2", compact ? "gap-2" : "gap-3")}>
           {question.options.map((option, i) => (
             <button
               key={i}
               type="button"
               onClick={() => handleVisualChoice(i)}
               disabled={!!feedback}
+              aria-label={hideOptionLabels ? `Picture choice ${i + 1}` : option.label}
               className={cn(
-                "group relative flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all",
+                "group relative flex flex-col items-center rounded-2xl border-2 transition-all",
+                hideOptionLabels ? "gap-0 p-2 sm:p-3" : "gap-2 p-4",
                 selectedOption === i && feedback === "correct"
                   ? "border-accent bg-accent/20"
                   : selectedOption === i && feedback === "incorrect"
@@ -228,21 +297,30 @@ export function LevelQuiz({ questions, onComplete, onBack, onFail }: LevelQuizPr
               )}
             >
               <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
-                <Image
-                  src={option.imageSrc}
-                  alt={option.label}
-                  fill
-                  className="object-cover"
-                  sizes="200px"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.style.display = "none"
-                  }}
-                />
+                <div
+                  className={cn(
+                    "relative size-full",
+                    option.transform ? TILE_TRANSFORM_CLASS[option.transform] : "",
+                  )}
+                >
+                  <Image
+                    src={option.imageSrc}
+                    alt=""
+                    fill
+                    className={cn("object-contain", hideOptionLabels ? "p-1 sm:p-1.5" : "p-2")}
+                    sizes="200px"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = "none"
+                    }}
+                  />
+                </div>
               </div>
-              <span className="font-heading text-sm font-bold text-foreground">
-                {option.label}
-              </span>
+              {!hideOptionLabels && (
+                <span className="font-heading text-sm font-bold text-foreground">
+                  {option.label}
+                </span>
+              )}
               {selectedOption === i && feedback === "correct" && (
                 <div className="absolute -right-2 -top-2 rounded-full bg-accent p-1">
                   <Check className="size-4 text-accent-foreground" />

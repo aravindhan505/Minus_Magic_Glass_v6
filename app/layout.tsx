@@ -1,10 +1,17 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Pixelify_Sans, Nunito } from 'next/font/google'
+import { Fredoka, Nunito, Pixelify_Sans } from 'next/font/google'
 import './globals.css'
 
-const pixelify = Pixelify_Sans({
+/** Kid-friendly rounded headings used app-wide. */
+const fredoka = Fredoka({
   variable: '--font-heading',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+})
+/** Retro arcade display font — home title only. */
+const pixelify = Pixelify_Sans({
+  variable: '--font-arcade',
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
 })
@@ -53,8 +60,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`dark ${pixelify.variable} ${nunito.variable} bg-background`}>
-      <body className="font-sans antialiased min-h-dvh">
+    <html lang="en" className={`dark ${fredoka.variable} ${pixelify.variable} ${nunito.variable} bg-background`}>
+      <body className="font-sans text-base leading-relaxed antialiased min-h-dvh md:text-lg">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

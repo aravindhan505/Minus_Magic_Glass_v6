@@ -6,8 +6,8 @@ import { IntroScreen } from "@/components/intro-screen"
 import { HomeScreen } from "@/components/home-screen"
 import { CalibrationMap } from "@/components/calibration-map"
 import { LevelScreen } from "@/components/level-screen"
-import { minuPoses, type Level } from "@/lib/minu-config"
-import { playFanfare, setSoundEnabled, startBGM, stopBGM, setBGMVolume, getBGMVolume, setSFXVolume, getSFXVolume, setVoiceVolume, getVoiceVolume, playNarratorFile } from "@/lib/audio"
+import { minuPoses, TESTING_UNLOCK_ALL_LEVELS, type Level } from "@/lib/minu-config"
+import { playFanfare, setSoundEnabled, startBGM, stopBGM, setBGMVolume, getBGMVolume, setSFXVolume, getSFXVolume, setVoiceVolume, getVoiceVolume, playNarratorFile, resetWelcomeSession } from "@/lib/audio"
 
 type Screen = "intro" | "home" | "map" | "level"
 
@@ -20,9 +20,15 @@ export default function Page() {
   const [sfxVolume, setSfxVolume] = useState(() => Math.round(getSFXVolume() * 100))
   const [voiceVolume, setVoiceVolumeState] = useState(() => Math.round(getVoiceVolume() * 100))
   const [celebrating, setCelebrating] = useState(false)
+  /** Which planet the map focuses on — persists across level complete / back navigation. */
+  const [mapFocusLevelId, setMapFocusLevelId] = useState(1)
 
   // The highest level the player can enter (next after the last completed one).
-  const unlockedLevel = completed.length === 0 ? 1 : Math.min(Math.max(...completed) + 1, 5)
+  const unlockedLevel = TESTING_UNLOCK_ALL_LEVELS
+    ? 5
+    : completed.length === 0
+      ? 1
+      : Math.min(Math.max(...completed) + 1, 5)
 
   // Sync sound toggle with audio module and start background music
   useEffect(() => { setSoundEnabled(soundOn) }, [soundOn])
@@ -35,18 +41,24 @@ export default function Page() {
     setCompleted((prev) => (prev.includes(levelId) ? prev : [...prev, levelId]))
     setCelebrating(true)
     playFanfare()
-    // Play level-complete narrator audio (all 5 done vs single level)
+
     const newCompleted = completed.includes(levelId) ? completed : [...completed, levelId]
-    if (newCompleted.length >= 5) {
-      playNarratorFile("narrator_all_complete.mp3")
-    } else {
-      playNarratorFile("narrator_level_complete.mp3")
-    }
-    // Wait long enough for narrator audio to finish before returning to map
-    setTimeout(() => {
+    const narratorFile =
+      newCompleted.length >= 5 ? "narrator_all_complete.mp3" : "narrator_level_complete.mp3"
+
+    let returnedToMap = false
+    const returnToMap = () => {
+      if (returnedToMap) return
+      returnedToMap = true
       setCelebrating(false)
+      setMapFocusLevelId(levelId)
       setScreen("map")
-    }, 6000)
+    }
+
+    // Wait for narrator to finish — never cut off mid-sentence
+    playNarratorFile(narratorFile, { onEnd: returnToMap })
+    // Safety net if the file is missing or playback fails
+    setTimeout(returnToMap, 15000)
   }
 
   return (
@@ -59,7 +71,11 @@ export default function Page() {
           onWatchIntro={() => setScreen("intro")}
           soundOn={soundOn}
           onToggleSound={() => setSoundOn((s) => !s)}
-          onResetProgress={() => setCompleted([])}
+          onResetProgress={() => {
+            setCompleted([])
+            setMapFocusLevelId(1)
+            resetWelcomeSession()
+          }}
           bgmVolume={bgmVolume}
           onBGMVolumeChange={(v) => { setBgmVolume(v); setBGMVolume(v / 100) }}
           sfxVolume={sfxVolume}
@@ -73,8 +89,11 @@ export default function Page() {
         <CalibrationMap
           unlockedLevel={unlockedLevel}
           completed={completed}
+          focusLevelId={mapFocusLevelId}
+          onFocusChange={setMapFocusLevelId}
           onBack={() => setScreen("home")}
           onSelectLevel={(level) => {
+            setMapFocusLevelId(level.id)
             setActiveLevel(level)
             setScreen("level")
           }}
@@ -82,7 +101,14 @@ export default function Page() {
       )}
 
       {screen === "level" && activeLevel && (
-        <LevelScreen level={activeLevel} onBack={() => setScreen("map")} onComplete={handleComplete} />
+        <LevelScreen
+          level={activeLevel}
+          onBack={() => {
+            setMapFocusLevelId(activeLevel.id)
+            setScreen("map")
+          }}
+          onComplete={handleComplete}
+        />
       )}
 
       {/* Celebration overlay */}
@@ -95,7 +121,9 @@ export default function Page() {
             height={240}
             className="animate-pop-in drop-shadow-2xl"
           />
-          <p className="font-heading mt-4 text-3xl font-extrabold text-accent">Great job! Glasses calibrated!</p>
+          <p className="font-heading mt-4 text-2xl font-bold text-accent text-balance md:text-3xl">
+            Great job! Glasses calibrated!
+          </p>
         </div>
       )}
     </>

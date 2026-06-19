@@ -1,0 +1,263 @@
+# Level 2: Color Potion Time — Narrator Audio Guide
+# =================================================
+# Project: Minu's Magic Glasses
+# Planet: Color Potion Time! (Level 2)
+#
+# PURPOSE
+# ───────
+# Complete list of NARRATOR voice lines for Level 2 only.
+# Generate each as an MP3, then drop into the folder below.
+#
+# LEVEL 2 FLOW (what the audio must match)
+# ─────────────────────────────────────────
+# 1. Level intro — plays on enter (level-screen.tsx → narrator_level2_intro.mp3)
+# 2. Color Potion Activity — 3 random rounds
+#    Target lens (left) + My Mix lens (right) · RGB sliders · Check Match
+#    Hidden object silhouette revealed when colors match
+# 3. Magic Reveal — short celebration screen per round (item name on screen)
+# 4. Final Quiz — 3 hands-on RGB slider challenges · pass 80% (3/3)
+#
+# UI TEXT THE AUDIO SHOULD ALIGN WITH
+# ───────────────────────────────────
+# Activity: "Mix the Red, Green, and Blue potions to match the Target lens!"
+# Speech bubble: "Mix Red, Green & Blue until both lenses match!"
+# Hint button: 3 progressive tiers (channels → direction → recipe numbers)
+# Reveal: "It's a [item name]!" (name is on screen — audio stays generic)
+# Quiz Qs: Bright RED · sunny YELLOW · purple potion
+#
+# VOICE DIRECTION
+# ───────────────
+# NARRATOR: Warm, friendly adult (PBS / Blue's Clues host)
+#   - Clear, slightly slow pace for ages 5–8
+#   - Encouraging, patient, never condescending
+#   - Use "potion" and "magic lens" language — playful lab vibe
+#
+# GENERATION SETTINGS
+# ───────────────────
+# Format: MP3, 44.1 kHz
+# Normalize peak: -3 dB
+# Keep volume consistent across all Level 2 files
+# Speed: Slightly slower than normal conversation
+#
+# WHERE TO PUT FILES
+# ──────────────────
+# public/audio/minu/
+#
+# FILE NAMING: narrator_level2_<topic>.mp3
+# Use the exact filename shown before each block.
+#
+# ALREADY EXISTS (shared — do NOT re-generate unless updating)
+# ─────────────────────────────────────────────────────────────
+# narrator_quiz_correct.mp3
+# narrator_quiz_correct_amazing.mp3
+# narrator_quiz_incorrect.mp3
+# narrator_quiz_incorrect_try.mp3
+# narrator_level_complete.mp3
+#
+# SUPERSEDES (old minu-dialogues.txt lines — do NOT use these texts)
+# ───────────────────────────────────────────────────────────────────
+# narrator_level2_instruction.mp3  — was pixel-tap UI (removed)
+# narrator_level2_quiz.mp3           — was multiple-choice (now hands-on only)
+# narrator_level2_quiz_hands_on.mp3  — replaced by per-question clips below
+#
+# TOTAL NARRATOR FILES TO GENERATE: 20
+# =================================================
+
+
+# ============================================================
+# SECTION A — Level Entry (plays when entering Level 2)
+# ============================================================
+
+narrator_level2_intro.mp3
+  Trigger: Level screen mount (level-screen.tsx)
+  Text: "Welcome to Color Potion Time! Every color on a screen is made from just three magic ingredients — Red, Green, and Blue. Computers mix them like potions to make every color you see. Help Minu match the target lens and reveal hidden objects!"
+  Emotion: Excited, teaching a fun fact
+  Notes: REPLACES old intro in minu-dialogues.txt (same concept, updated for lens UI)
+
+
+# ============================================================
+# SECTION B — Color Potion Activity (3 rounds)
+# ============================================================
+
+narrator_level2_activity_intro.mp3
+  Trigger: First time activity phase loads (optional — play once per level run)
+  Text: "Look at the target lens on the left — that's the color you need. Use the Red, Green, and Blue potion sliders to mix your own color in the lens on the right. When both lenses match, you'll reveal a hidden object!"
+  Emotion: Clear, guiding, enthusiastic
+
+narrator_level2_round_start.mp3
+  Trigger: Each new potion round begins (rounds 1–3)
+  Text: "New round! Study the target color, then mix your potions until both magic lenses look the same. Tap Check Match when you think you've got it!"
+  Emotion: Fresh energy, encouraging
+
+narrator_level2_reminder.mp3
+  Trigger: Idle 10+ seconds during activity (optional repeat)
+  Text: "Slide the Red, Green, and Blue potions. Watch the mix lens change! Need help? Tap the Hint button — I can glow the sliders that need adjusting."
+  Emotion: Patient, gentle nudge
+
+# --- Progressive hints (Hint button — 3 tiers) ---
+# On-screen text is dynamic (channel names + numbers). These clips teach the
+# hint *concept* while the UI shows the specifics.
+
+narrator_level2_hint_channels.mp3
+  Trigger: Hint tier 1
+  Text: "Hint: Some potions still need adjusting! Look for the glowing sliders — those are the colors that are still off."
+  Emotion: Helpful, pointing something out
+
+narrator_level2_hint_direction.mp3
+  Trigger: Hint tier 2
+  Text: "Hint: Slide the glowing potion left or right! If the color needs more of that ingredient, slide right. If it needs less, slide left."
+  Emotion: Teaching direction, patient
+
+narrator_level2_hint_recipe.mp3
+  Trigger: Hint tier 3
+  Text: "Hint recipe time! I'll show you rough target numbers on screen. Try to match those amounts on the sliders — they don't have to be perfect, just close!"
+  Emotion: Revealing, supportive
+
+narrator_level2_hint_close.mp3
+  Trigger: Guess is very close but Check Match failed (optional)
+  Text: "So close! Just tiny tweaks — nudge a slider a little bit, then try Check Match again!"
+  Emotion: Encouraging, almost-there energy
+
+# --- Check Match feedback ---
+
+narrator_level2_match_success.mp3
+  Trigger: Colors match → transition to reveal phase
+  Text: "Perfect mix! The lenses match — you unlocked the hidden object! Let's see what it is!"
+  Emotion: Celebratory, quick
+
+narrator_level2_match_miss.mp3
+  Trigger: Check Match failed (colors don't match)
+  Text: "Not quite yet! The lenses aren't matching. Try the Hint button — I'll help you figure out which potion to adjust!"
+  Emotion: Gentle, not scolding
+
+narrator_level2_all_rounds_done.mp3
+  Trigger: All 3 potion rounds finished → transition to quiz
+  Text: "Amazing potion mixing! You revealed three hidden objects and mastered how Red, Green, and Blue make colors. One last challenge — the Color Potion Quiz!"
+  Emotion: Proud, building anticipation
+
+
+# ============================================================
+# SECTION C — Magic Reveal (between rounds)
+# ============================================================
+
+narrator_level2_reveal.mp3
+  Trigger: Reveal screen appears (item name shown on screen)
+  Text: "Magic reveal! You mixed the perfect potion! Look what was hiding inside the lens!"
+  Emotion: Wonder, delight
+  Notes: Do NOT name the item in audio — the UI shows "It's a [Strawberry]!" etc.
+
+narrator_level2_reveal_continue.mp3
+  Trigger: Optional — when reveal Continue button appears
+  Text: "Ready for the next potion? Let's mix another color!"
+  Emotion: Upbeat, forward momentum
+  Notes: Skip on final round (quiz button instead)
+
+
+# ============================================================
+# SECTION D — Final Quiz (3 hands-on RGB challenges)
+# ============================================================
+
+narrator_level2_quiz_intro.mp3
+  Trigger: Quiz phase starts
+  Text: "Color Potion Quiz! I'll ask you to mix three special colors using the sliders. Get all three right to pass and calibrate Minu's color lens!"
+  Emotion: Confident, encouraging
+  Notes: REPLACES narrator_level2_quiz.mp3 from minu-dialogues.txt
+
+# --- One clip per quiz question (LEVEL2_QUIZ in level2-color-potion.ts) ---
+
+narrator_level2_quiz_red.mp3
+  Trigger: Quiz question 1 (hands-on)
+  Text: "First potion: bright RED! Push the Red slider high, and keep Green and Blue low. Make it glow red!"
+  Emotion: Energetic, clear
+
+narrator_level2_quiz_yellow.mp3
+  Trigger: Quiz question 2 (hands-on)
+  Text: "Next: sunny YELLOW! Red and Green should both be high — Blue stays low. Red plus Green makes yellow!"
+  Emotion: Cheerful, teaching
+
+narrator_level2_quiz_purple.mp3
+  Trigger: Quiz question 3 (hands-on)
+  Text: "Last one: purple potion! Red and Blue high, Green lower. Mix those two together for purple!"
+  Emotion: Fun challenge, supportive
+
+# Quiz correct/incorrect: use existing shared files (header above).
+# Do NOT create duplicates:
+#   narrator_quiz_correct.mp3 / narrator_quiz_correct_amazing.mp3
+#   narrator_quiz_incorrect.mp3 / narrator_quiz_incorrect_try.mp3
+
+narrator_level2_quiz_pass.mp3
+  Trigger: Quiz passed (3/3 correct)
+  Text: "You passed! You really understand how Red, Green, and Blue make every color. Minu's color lens is calibrated!"
+  Emotion: Peak pride, celebration
+
+narrator_level2_quiz_fail.mp3
+  Trigger: Quiz failed — before retry
+  Text: "Almost there! Remember — Red, Green, and Blue are the three color potions. Mix them again and give the quiz another try!"
+  Emotion: Encouraging, no disappointment
+
+
+# ============================================================
+# SECTION E — Optional Minu Reactions (Level 2 only)
+# Generate these if you want Minu voice lines too (not narrator).
+# Place in same folder: public/audio/minu/
+# ============================================================
+
+minu_level2_sees_colors.mp3
+  Voice: Minu
+  Trigger: Level intro or activity start (optional, after narrator intro)
+  Text: "Wait — every color is THREE numbers? Red, Green, and Blue? That's... a lot of numbers! How do they make all the colors?"
+  Emotion: Amazed, slightly overwhelmed, curious
+  Notes: Already specified in minu-dialogues.txt — keep this text
+
+minu_level2_mixing.mp3
+  Voice: Minu
+  Trigger: First slider move in a round
+  Text: "Ooh! The lens is changing! So if I add more Red potion... the whole color shifts? That's like cooking!"
+  Emotion: Curious, delighted discovery
+
+minu_level2_reveal_gasp.mp3
+  Voice: Minu
+  Trigger: Reveal screen
+  Text: "Whoa! It was hiding in the color the whole time! I can almost see it now!"
+  Emotion: Amazed, joyful
+
+minu_level2_quiz_ready.mp3
+  Voice: Minu
+  Trigger: Quiz starts
+  Text: "A quiz about potions? I watched you mix — you've got this!"
+  Emotion: Nervous but hopeful
+
+
+# ============================================================
+# QUICK CHECKLIST — 20 narrator files to generate
+# ============================================================
+#
+# [ ] narrator_level2_intro.mp3
+# [ ] narrator_level2_activity_intro.mp3
+# [ ] narrator_level2_round_start.mp3
+# [ ] narrator_level2_reminder.mp3
+# [ ] narrator_level2_hint_channels.mp3
+# [ ] narrator_level2_hint_direction.mp3
+# [ ] narrator_level2_hint_recipe.mp3
+# [ ] narrator_level2_hint_close.mp3
+# [ ] narrator_level2_match_success.mp3
+# [ ] narrator_level2_match_miss.mp3
+# [ ] narrator_level2_all_rounds_done.mp3
+# [ ] narrator_level2_reveal.mp3
+# [ ] narrator_level2_reveal_continue.mp3
+# [ ] narrator_level2_quiz_intro.mp3
+# [ ] narrator_level2_quiz_red.mp3
+# [ ] narrator_level2_quiz_yellow.mp3
+# [ ] narrator_level2_quiz_purple.mp3
+# [ ] narrator_level2_quiz_pass.mp3
+# [ ] narrator_level2_quiz_fail.mp3
+#
+# Optional Minu (4 files):
+# [ ] minu_level2_sees_colors.mp3
+# [ ] minu_level2_mixing.mp3
+# [ ] minu_level2_reveal_gasp.mp3
+# [ ] minu_level2_quiz_ready.mp3
+#
+# After placing files, tell the dev:
+# "I've placed the Level 2 narrator MP3s in public/audio/minu/"
+# ============================================================

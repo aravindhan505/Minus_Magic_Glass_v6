@@ -2,8 +2,12 @@
   "name": "my-project",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3001 --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."

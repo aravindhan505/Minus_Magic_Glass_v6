@@ -45,7 +45,7 @@ export function SpeechBubble({ text, className, autoHideMs }: SpeechBubbleProps)
       {/* Speech bubble tail */}
       <div className="absolute -bottom-2 left-8 h-0 w-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-primary/40" />
 
-      <p className="font-heading text-sm font-bold leading-snug text-foreground">
+      <p className="text-base font-semibold leading-snug text-foreground md:text-lg">
         {text}
       </p>
     </div>

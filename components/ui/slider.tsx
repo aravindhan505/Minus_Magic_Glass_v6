@@ -12,6 +12,8 @@ type SliderProps = {
   color?: string
   onChange: (id: string, value: number) => void
   className?: string
+  /** Pulse ring when a hint points at this slider */
+  highlighted?: boolean
 }
 
 /**
@@ -27,6 +29,7 @@ export function LevelSlider({
   color = "var(--primary)",
   onChange,
   className,
+  highlighted,
 }: SliderProps) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -69,7 +72,13 @@ export function LevelSlider({
   }, [])
 
   return (
-    <div className={cn("flex flex-col gap-1.5 select-none", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-1.5 rounded-xl select-none transition-shadow",
+        highlighted && "animate-pulse ring-2 ring-secondary/70 ring-offset-2 ring-offset-card/80",
+        className,
+      )}
+    >
       <div className="flex items-center justify-between">
         <label className="font-heading text-sm font-bold text-foreground">
           {label}

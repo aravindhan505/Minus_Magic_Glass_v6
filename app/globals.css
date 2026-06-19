@@ -1,12 +1,20 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+@source '../app';
+@source '../components';
+@source '../lib';
+@source not '../level5_assets';
+@source not '../terminals';
+@source not '../*.txt';
+@source not '../*.md';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: var(--font-heading), 'Pixelify Sans Fallback';
-  --font-sans: var(--font-body), 'Nunito Fallback';
+  --font-heading: var(--font-heading), 'Fredoka Fallback', system-ui, sans-serif;
+  --font-arcade: var(--font-arcade), 'Pixelify Sans Fallback', monospace;
+  --font-sans: var(--font-body), 'Nunito Fallback', system-ui, sans-serif;
   --font-mono: 'Geist Mono Fallback';
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -61,7 +69,7 @@
   --secondary: oklch(0.72 0.29 332);
   --secondary-foreground: oklch(0.11 0.03 290);
   --muted: oklch(0.22 0.05 292);
-  --muted-foreground: oklch(0.72 0.05 300);
+  --muted-foreground: oklch(0.82 0.04 300);
   --accent: oklch(0.78 0.2 150);
   --accent-foreground: oklch(0.11 0.03 290);
   --destructive: oklch(0.62 0.24 25);
@@ -97,7 +105,7 @@
   --secondary: oklch(0.72 0.29 332);
   --secondary-foreground: oklch(0.11 0.03 290);
   --muted: oklch(0.22 0.05 292);
-  --muted-foreground: oklch(0.72 0.05 300);
+  --muted-foreground: oklch(0.82 0.04 300);
   --accent: oklch(0.78 0.2 150);
   --accent-foreground: oklch(0.11 0.03 290);
   --destructive: oklch(0.62 0.24 25);
@@ -133,7 +141,7 @@
     --secondary: oklch(0.72 0.29 332);
     --secondary-foreground: oklch(0.11 0.03 290);
     --muted: oklch(0.22 0.05 292);
-    --muted-foreground: oklch(0.72 0.05 300);
+    --muted-foreground: oklch(0.82 0.04 300);
     --accent: oklch(0.78 0.2 150);
     --accent-foreground: oklch(0.11 0.03 290);
     --destructive: oklch(0.62 0.24 25);
@@ -175,6 +183,10 @@
 @layer utilities {
   .font-heading {
     font-family: var(--font-heading);
+    letter-spacing: 0.01em;
+  }
+  .font-arcade {
+    font-family: var(--font-arcade);
   }
   /* Retro neon glow for the main title (magenta) */
   .text-neon {
@@ -202,6 +214,31 @@
   .animate-float {
     animation: minu-float 3.5s cubic-bezier(0.42, 0, 0.58, 1) infinite;
   }
+  @keyframes spaceship-hover {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  .animate-spaceship-hover {
+    animation: spaceship-hover 2.8s ease-in-out infinite;
+  }
+  @keyframes spaceship-smoke {
+    0% {
+      opacity: 0.55;
+      transform: translateY(0) translateX(0) scale(0.5);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-22px) translateX(var(--smoke-drift, 0px)) scale(1.35);
+    }
+  }
+  .animate-spaceship-smoke {
+    animation: spaceship-smoke 1.8s ease-out forwards;
+  }
   @keyframes twinkle {
     0%,
     100% {
@@ -226,5 +263,121 @@
   }
   .animate-pop-in {
     animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+  .animate-shake {
+    animation: shake 0.35s ease-in-out;
+  }
+  @keyframes planet-orbit-glow {
+    0%,
+    100% {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.06);
+    }
+  }
+  .animate-planet-glow {
+    animation: planet-orbit-glow 3s ease-in-out infinite;
+  }
+  @keyframes planet-slide-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(80px) scale(0.85);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+  @keyframes planet-slide-in-left {
+    0% {
+      opacity: 0;
+      transform: translateX(-80px) scale(0.85);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+  .animate-planet-from-right {
+    animation: planet-slide-in-right 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-planet-from-left {
+    animation: planet-slide-in-left 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes planet-bounce {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-8px) scale(1.02);
+    }
+  }
+  .animate-planet-bounce {
+    animation: planet-bounce 2.8s ease-in-out infinite;
+  }
+  @keyframes planet-shadow-bounce {
+    0%,
+    100% {
+      transform: translateX(-50%) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateX(-50%) scale(0.86);
+      opacity: 0.35;
+    }
+  }
+  .animate-planet-shadow-bounce {
+    animation: planet-shadow-bounce 2.8s ease-in-out infinite;
+  }
+  .planet-img-glow {
+    filter: drop-shadow(0 10px 18px oklch(0 0 0 / 45%));
+  }
+  .planet-img-glow-active {
+    filter:
+      drop-shadow(0 12px 22px oklch(0 0 0 / 50%))
+      drop-shadow(0 0 20px var(--planet-glow))
+      drop-shadow(0 0 40px color-mix(in oklch, var(--planet-glow) 55%, transparent));
+  }
+  @keyframes slosh-wave {
+    0% { transform: rotate(0deg) translate(0, 0); }
+    25% { transform: rotate(2deg) translate(2px, -1px); }
+    50% { transform: rotate(-1deg) translate(-1px, 1px); }
+    75% { transform: rotate(1.5deg) translate(1px, 0); }
+    100% { transform: rotate(0deg) translate(0, 0); }
+  }
+  .animate-slosh-1 {
+    animation: slosh-wave 7s linear infinite;
+  }
+  .animate-slosh-2 {
+    animation: slosh-wave 10s linear infinite reverse;
+  }
+  @keyframes wobble {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-planet-bounce,
+    .animate-planet-shadow-bounce,
+    .animate-planet-glow,
+    .animate-slosh-1,
+    .animate-slosh-2,
+    .animate-spaceship-hover,
+    .animate-spaceship-smoke {
+      animation: none !important;
+    }
   }
 }

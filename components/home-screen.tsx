@@ -6,7 +6,14 @@ import { Play, Film, Settings, X, Volume2, VolumeX, RotateCcw } from "lucide-rea
 import { Button } from "@/components/ui/button"
 import { Starfield } from "@/components/starfield"
 import { minuPoses } from "@/lib/minu-config"
-import { playClick, playNarratorFile, temporarilyEnableSound, restoreSoundState } from "@/lib/audio"
+import {
+  playClick,
+  playNarratorFile,
+  temporarilyEnableSound,
+  restoreSoundState,
+  MINU_VISITED_KEY,
+  markMinuVisited,
+} from "@/lib/audio"
 import { LevelSlider } from "@/components/ui/slider"
 
 type HomeScreenProps = {
@@ -38,14 +45,22 @@ export function HomeScreen({
 }: HomeScreenProps) {
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-  // Play narrator welcome on mount (first-time vs returning)
+  // Play narrator welcome on mount (first-time vs returning).
+  // Debounce blocks React Strict Mode's double-mount from flipping first-time → return.
   useEffect(() => {
-    const hasVisited = localStorage.getItem("minu-visited")
+    const now = Date.now()
+    const last = Number(sessionStorage.getItem("minu-welcome-last") || 0)
+    if (now - last < 1500) return
+    sessionStorage.setItem("minu-welcome-last", String(now))
+
+    const hasVisited = localStorage.getItem(MINU_VISITED_KEY) === "true"
     if (hasVisited) {
       playNarratorFile("narrator_welcome_return.mp3")
     } else {
-      playNarratorFile("narrator_welcome_first_time.mp3")
-      localStorage.setItem("minu-visited", "true")
+      playNarratorFile("narrator_welcome_first_time.mp3", {
+        onEnd: markMinuVisited,
+      })
+      setTimeout(markMinuVisited, 25000)
     }
   }, [])
 
@@ -67,10 +82,10 @@ export function HomeScreen({
       </header>
 
       <div className="animate-pop-in relative z-10 flex flex-col items-center gap-6 text-center">
-        <h1 className="font-heading text-neon text-5xl font-extrabold tracking-tight text-balance md:text-7xl">
+        <h1 className="font-arcade text-neon text-5xl font-extrabold tracking-tight text-balance md:text-7xl">
           Minu&apos;s Magic Glasses
         </h1>
-        <p className="max-w-md text-base font-semibold text-muted-foreground text-pretty md:text-lg">
+        <p className="max-w-md text-lg font-semibold text-muted-foreground text-pretty md:text-xl">
           Help Minu the alien learn to see! Discover how computers see the world across 5 fun levels.
         </p>
 

@@ -1,5 +1,7 @@
 "use client"
 
+import { planetAudio } from "@/lib/minu-config"
+
 // =============================================================
 // Audio — TTS voiceover and SFX sound effects helpers.
 // Uses Web Speech API for TTS and Web Audio API for simple tones.
@@ -228,22 +230,98 @@ export function playInspect(): void {
 // ─── Narrator MP3 Playback ─────────────────────────────────
 
 let currentNarratorAudio: HTMLAudioElement | null = null
+let mapExplainPlayedThisSession = false
+
+export type NarratorPlaybackOptions = {
+  /** Called when the clip finishes (or after a short fallback if the file is missing). */
+  onEnd?: () => void
+  /** Minimum ms to wait before onEnd when sound is muted (default 3000). */
+  mutedFallbackMs?: number
+}
 
 /**
- * Play a narrator MP3 file from /public/audio/minu/.
+ * Play a narrator MP3 from a public audio path (e.g. /audio/minu/foo.mp3).
  * Stops any currently playing narrator line first.
  */
-export function playNarratorFile(filename: string): void {
-  if (!_soundEnabled) return
-  if (typeof window === "undefined") return
+export function playNarratorSrc(src: string, options?: NarratorPlaybackOptions): void {
+  if (typeof window === "undefined") {
+    options?.onEnd?.()
+    return
+  }
 
-  // Stop any currently playing narrator
+  const finish = () => options?.onEnd?.()
+
+  if (!_soundEnabled) {
+    setTimeout(finish, options?.mutedFallbackMs ?? 3000)
+    return
+  }
+
   stopNarrator()
 
-  const audio = new Audio(`/audio/minu/${filename}`)
+  const audio = new Audio(src)
   audio.volume = _voiceVolume
-  audio.play().catch(() => {}) // silently fail if file missing
+
+  const handleEnd = () => {
+    if (currentNarratorAudio === audio) currentNarratorAudio = null
+    finish()
+  }
+
+  audio.addEventListener("ended", handleEnd, { once: true })
+  audio.addEventListener(
+    "error",
+    () => setTimeout(handleEnd, 2000),
+    { once: true },
+  )
+
   currentNarratorAudio = audio
+  audio.play().catch(() => setTimeout(handleEnd, 2000))
+}
+
+/** Play a narrator MP3 file from /public/audio/minu/. */
+export function playNarratorFile(filename: string, options?: NarratorPlaybackOptions): void {
+  playNarratorSrc(`/audio/minu/${filename}`, options)
+}
+
+/** Play the narrator clip that announces a planet's name on the Planet Map. */
+export function playPlanetNarrator(levelId: number): void {
+  const filename = planetAudio[levelId]
+  if (!filename) return
+  playNarratorSrc(`/audio/planets/${filename}`)
+}
+
+/** Play the planet-map narrator line at most once per browser session. */
+export function playMapExplainOnce(options?: { onComplete?: () => void }): void {
+  if (mapExplainPlayedThisSession) {
+    options?.onComplete?.()
+    return
+  }
+  mapExplainPlayedThisSession = true
+  playNarratorFile("narrator_map_explain.mp3", { onEnd: options?.onComplete })
+}
+
+/** Reset map narrator guard (e.g. after a full app reload in dev). */
+export function resetMapExplainSession(): void {
+  mapExplainPlayedThisSession = false
+}
+
+export const MINU_VISITED_KEY = "minu-visited"
+
+let minuVisitedMarked = false
+
+/** Mark the player as a returning visitor (after first-time welcome finishes). */
+export function markMinuVisited(): void {
+  if (typeof window === "undefined" || minuVisitedMarked) return
+  minuVisitedMarked = true
+  localStorage.setItem(MINU_VISITED_KEY, "true")
+}
+
+/** Clear welcome/map session guards — use with Reset Progress. */
+export function resetWelcomeSession(): void {
+  if (typeof window === "undefined") return
+  minuVisitedMarked = false
+  sessionStorage.removeItem("minu-welcome-last")
+  localStorage.removeItem(MINU_VISITED_KEY)
+  resetMapExplainSession()
 }
 
 /** Stop any currently playing narrator MP3. */
@@ -253,6 +331,12 @@ export function stopNarrator(): void {
     currentNarratorAudio.currentTime = 0
     currentNarratorAudio = null
   }
+}
+
+/** True while a narrator clip is actively playing. */
+export function isNarratorPlaying(): boolean {
+  if (!currentNarratorAudio) return false
+  return !currentNarratorAudio.paused && !currentNarratorAudio.ended
 }
 
 // ─── Background Music (Ambient Space Loop) ───────────────────

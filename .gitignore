@@ -15,3 +15,11 @@ dist/
 node_modules/
 .next/
 .DS_Store
+tsconfig.tsbuildinfo
+mcps/
+
+# Doc/asset specs — avoid dev tooling file-lock scans on Windows
+terminals/
+level5_assets/
+planet_asset.txt
+level5-prompts.txt
