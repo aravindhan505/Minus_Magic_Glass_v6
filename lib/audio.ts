@@ -252,6 +252,8 @@ export function unlockAudioFromGesture(): void {
 export type NarratorPlaybackOptions = {
   /** Called when the clip finishes (or after a short fallback if the file is missing). */
   onEnd?: () => void
+  /** Called when the file fails to load; if omitted, onEnd runs after a short delay. */
+  onError?: () => void
   /** Minimum ms to wait before onEnd when sound is muted (default 3000). */
   mutedFallbackMs?: number
 }
@@ -286,7 +288,14 @@ export function playNarratorSrc(src: string, options?: NarratorPlaybackOptions):
   audio.addEventListener("ended", handleEnd, { once: true })
   audio.addEventListener(
     "error",
-    () => setTimeout(handleEnd, 2000),
+    () => {
+      if (options?.onError) {
+        if (currentNarratorAudio === audio) currentNarratorAudio = null
+        options.onError()
+        return
+      }
+      setTimeout(handleEnd, 2000)
+    },
     { once: true },
   )
 

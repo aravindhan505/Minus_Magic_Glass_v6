@@ -19,6 +19,7 @@ import {
   LEVEL2_HINT_AUDIO,
   LEVEL2_QUIZ_QUESTION_AUDIO,
   playLevel2Narrator,
+  playLevel2RevealForItem,
   playLevel2Then,
 } from "@/lib/level2-audio"
 import {
@@ -63,7 +64,7 @@ export default function Level2BrightnessInColor({ onComplete, onBack }: LevelAct
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const roundNarratorPlayed = useRef(-1)
-  const revealNarratorPlayed = useRef(false)
+  const revealPlayedForItem = useRef<string | null>(null)
 
   const clearIdleTimer = useCallback(() => {
     if (idleTimer.current) {
@@ -110,13 +111,14 @@ export default function Level2BrightnessInColor({ onComplete, onBack }: LevelAct
 
   useEffect(() => {
     if (phase !== "reveal") {
-      revealNarratorPlayed.current = false
+      revealPlayedForItem.current = null
       return
     }
-    if (revealNarratorPlayed.current) return
-    revealNarratorPlayed.current = true
-    playLevel2Narrator("narrator_level2_reveal.mp3")
-  }, [phase])
+    const slug = round.item.name
+    if (revealPlayedForItem.current === slug) return
+    revealPlayedForItem.current = slug
+    playLevel2RevealForItem(slug)
+  }, [phase, round.item.name])
 
   useEffect(() => () => clearIdleTimer(), [clearIdleTimer])
 
