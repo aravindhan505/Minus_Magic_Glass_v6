@@ -1,8 +1,8 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
-import { ArrowLeft, Zap, CheckCircle2, RotateCcw, Lightbulb, Star } from "lucide-react"
+import { ArrowLeft, Zap, CheckCircle2, RotateCcw, Lightbulb, Star, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MinuAvatar } from "@/components/minu-avatar"
 import { Starfield } from "@/components/starfield"
@@ -14,7 +14,7 @@ import {
   LEVEL3_QUIZ_PASS_PERCENT,
   LEVEL3_REQUIRED_FRACTION,
   LEVEL3_TRACE_RADIUS,
-  LEVEL3_TRACE_ROUNDS,
+  getRandomLevel3Rounds,
   distToSegment,
 } from "@/lib/level3-edge-detection"
 import { cn } from "@/lib/utils"
@@ -23,14 +23,19 @@ type Phase = "activity" | "quiz"
 
 export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivityProps) {
   const [phase, setPhase] = useState<Phase>("activity")
+  const [runKey] = useState(() => Date.now())
+  const rounds = useMemo(() => getRandomLevel3Rounds(), [runKey])
+
   const [roundIndex, setRoundIndex] = useState(0)
   const [litDots, setLitDots] = useState<Set<number>>(new Set())
   const [roundDone, setRoundDone] = useState(false)
+  const [colorRevealed, setColorRevealed] = useState(false)
   const [minuPose, setMinuPose] = useState<MinuPose>("pointing")
-  const [statusText, setStatusText] = useState(LEVEL3_TRACE_ROUNDS[0].instruction)
+  const [statusText, setStatusText] = useState(
+    "A mystery shape! Trace every dot along the edges to reveal the picture!",
+  )
   const [hintVisible, setHintVisible] = useState(false)
-  const [showColorArt, setShowColorArt] = useState(true)
-  const [showSilhouette, setShowSilhouette] = useState(true)
+  const [silhouetteOk, setSilhouetteOk] = useState(true)
 
   const [quizIndex, setQuizIndex] = useState(0)
   const [quizScore, setQuizScore] = useState(0)
@@ -40,19 +45,20 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
 
   const svgRef = useRef<SVGSVGElement>(null)
   const prevPosRef = useRef<{ x: number; y: number } | null>(null)
-  const round = LEVEL3_TRACE_ROUNDS[roundIndex]
-  const progress = litDots.size / round.dots.length
+  const round = rounds[roundIndex]
+  const progress = round ? litDots.size / round.dots.length : 0
   const progressPct = Math.min(100, Math.round(progress * 100))
 
   useEffect(() => {
-    setShowColorArt(true)
-    setShowSilhouette(true)
+    setSilhouetteOk(true)
+    setColorRevealed(false)
   }, [roundIndex])
 
   useEffect(() => {
-    if (roundDone) return
+    if (!round || roundDone) return
     if (progress >= LEVEL3_REQUIRED_FRACTION) {
       setRoundDone(true)
+      setColorRevealed(true)
       setMinuPose("celebrating")
       setStatusText(round.doneText)
       playFanfare()
@@ -61,11 +67,11 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
     } else if (progress >= 0.2) {
       setMinuPose("thinking")
     }
-  }, [progress, roundDone, round.doneText])
+  }, [progress, roundDone, round])
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
-      if (roundDone) return
+      if (roundDone || !round) return
       const svg = svgRef.current
       if (!svg) return
 
@@ -93,19 +99,22 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
         return next.size !== prevDots.size ? next : prevDots
       })
     },
-    [round.dots, roundDone],
+    [round, roundDone],
   )
 
   const goNextRound = () => {
     playClick()
     prevPosRef.current = null
-    if (roundIndex < LEVEL3_TRACE_ROUNDS.length - 1) {
+    if (roundIndex < rounds.length - 1) {
       const next = roundIndex + 1
       setRoundIndex(next)
       setLitDots(new Set())
       setRoundDone(false)
+      setColorRevealed(false)
       setMinuPose("pointing")
-      setStatusText(LEVEL3_TRACE_ROUNDS[next].instruction)
+      setStatusText(
+        "A mystery shape! Trace every dot along the edges to reveal the picture!",
+      )
       setHintVisible(false)
     } else {
       setPhase("quiz")
@@ -117,8 +126,9 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
     prevPosRef.current = null
     setLitDots(new Set())
     setRoundDone(false)
+    setColorRevealed(false)
     setMinuPose("pointing")
-    setStatusText(round.instruction)
+    setStatusText(round?.instruction ?? "")
     setHintVisible(false)
   }
 
@@ -157,6 +167,8 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
   }
 
   const passCount = Math.ceil((LEVEL3_QUIZ.length * LEVEL3_QUIZ_PASS_PERCENT) / 100)
+
+  if (!round) return null
 
   if (phase === "quiz") {
     const q = LEVEL3_QUIZ[quizIndex]
@@ -294,18 +306,18 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
             Level 3 · Edge Detection
           </p>
           <h1 className="font-heading truncate text-base font-extrabold text-foreground sm:text-xl">
-            {round.title}
+            {colorRevealed ? round.label : `Round ${roundIndex + 1} – Mystery Shape`}
           </h1>
         </div>
         <span className="font-heading shrink-0 rounded-full border border-primary/30 bg-card/80 px-2.5 py-1 text-xs font-bold text-primary shadow-sm sm:px-3 sm:text-sm">
-          {roundIndex + 1}/{LEVEL3_TRACE_ROUNDS.length}
+          {roundIndex + 1}/{rounds.length}
         </span>
       </header>
 
       <div className="relative z-10 flex min-h-0 flex-1 gap-2 px-2 sm:gap-4 sm:px-4">
         <aside className="flex w-[36%] min-w-[118px] max-w-[280px] shrink-0 flex-col gap-2 sm:gap-2.5">
           <p className="font-heading text-center text-[10px] font-bold tracking-wider text-secondary uppercase sm:text-xs">
-            <Star className="mb-0.5 inline size-3 fill-secondary text-secondary" /> Trace the Picture
+            <Star className="mb-0.5 inline size-3 fill-secondary text-secondary" /> Map the Edges
           </p>
           <div className="flex shrink-0 items-center justify-center py-1">
             <MinuAvatar pose={minuPose} size={64} className="hidden sm:block" />
@@ -323,43 +335,50 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
               {statusText}
             </p>
           </div>
-          <div className="shrink-0 rounded-2xl border border-border/50 bg-card/60 px-3 py-2">
-            <p className="font-heading mb-1.5 text-center text-[10px] font-bold text-muted-foreground sm:text-xs">
-              Traced: {progressPct}%
-            </p>
-            <div className="h-2 overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full transition-all duration-150"
-                style={{ width: `${progressPct}%`, backgroundColor: round.color }}
-              />
+          {!colorRevealed && (
+            <div className="shrink-0 rounded-2xl border border-border/50 bg-card/60 px-3 py-2">
+              <p className="font-heading mb-1.5 text-center text-[10px] font-bold text-muted-foreground sm:text-xs">
+                Edges traced: {progressPct}%
+              </p>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full transition-all duration-150"
+                  style={{ width: `${progressPct}%`, backgroundColor: round.color }}
+                />
+              </div>
+              <p className="font-heading mt-1.5 text-center text-[9px] font-bold text-muted-foreground">
+                Trace 100% to reveal the picture!
+              </p>
             </div>
-          </div>
-          <div className="grid shrink-0 grid-cols-2 gap-1.5">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                playClick()
-                setHintVisible((h) => !h)
-              }}
-              className="font-heading h-9 gap-1 rounded-full border border-secondary/30 text-[10px] font-bold sm:h-10 sm:text-xs"
-            >
-              <Lightbulb className="size-3.5 text-secondary" />
-              Hint
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={resetRound}
-              className="font-heading h-9 gap-1 rounded-full text-[10px] font-bold sm:h-10 sm:text-xs"
-            >
-              <RotateCcw className="size-3.5" />
-              Reset
-            </Button>
-          </div>
-          {hintVisible && (
+          )}
+          {!roundDone && (
+            <div className="grid shrink-0 grid-cols-2 gap-1.5">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  playClick()
+                  setHintVisible((h) => !h)
+                }}
+                className="font-heading h-9 gap-1 rounded-full border border-secondary/30 text-[10px] font-bold sm:h-10 sm:text-xs"
+              >
+                <Lightbulb className="size-3.5 text-secondary" />
+                Hint
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={resetRound}
+                className="font-heading h-9 gap-1 rounded-full text-[10px] font-bold sm:h-10 sm:text-xs"
+              >
+                <RotateCcw className="size-3.5" />
+                Reset
+              </Button>
+            </div>
+          )}
+          {hintVisible && !roundDone && (
             <p className="rounded-xl bg-secondary/10 px-2 py-2 text-[10px] font-bold leading-snug text-secondary sm:text-xs">
               {round.hint}
             </p>
@@ -369,68 +388,81 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
         <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
           <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-primary/25 bg-card/50 px-2 py-1.5 sm:px-3">
             <p className="font-heading text-[10px] font-bold text-foreground sm:text-xs">
-              Slide your finger along the dots — like a coloring book!
+              {colorRevealed
+                ? "You found every edge — here's the real picture!"
+                : "Trace the dotted edges on the mystery silhouette!"}
             </p>
           </div>
 
-          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-black/80 p-2">
-            {showColorArt && (
-              <Image
-                src={round.colorSrc}
-                alt={round.label}
-                fill
-                className="pointer-events-none object-contain p-3"
-                sizes="(max-width: 640px) 55vw, 400px"
-                onError={() => setShowColorArt(false)}
-                priority
-              />
-            )}
-            {showSilhouette && (
-              <Image
-                src={round.silhouetteSrc}
-                alt=""
-                fill
-                className="pointer-events-none object-contain p-3 opacity-70 mix-blend-screen"
-                sizes="(max-width: 640px) 55vw, 400px"
-                onError={() => setShowSilhouette(false)}
-                priority
-              />
-            )}
-            <svg
-              ref={svgRef}
-              viewBox="0 0 200 200"
-              className="relative z-10 h-full max-h-full w-full max-w-full touch-none select-none"
-              onPointerMove={handlePointerMove}
-              onPointerLeave={() => {
-                prevPosRef.current = null
-              }}
-            >
-              {!showColorArt && (
-                <path
-                  d={round.svgPath}
-                  fill={round.color}
-                  fillOpacity={0.35}
-                  stroke={round.color}
-                  strokeWidth={2}
-                  strokeOpacity={0.5}
+          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-black p-2">
+            {colorRevealed ? (
+              <div className="relative size-full animate-pop-in">
+                <Image
+                  src={round.colorSrc}
+                  alt={round.label}
+                  fill
+                  className="object-contain p-3"
+                  sizes="(max-width: 640px) 55vw, 400px"
+                  priority
                 />
-              )}
-              {round.dots.map((dot, i) => {
-                const lit = litDots.has(i)
-                return (
-                  <circle
-                    key={i}
-                    cx={dot.x}
-                    cy={dot.y}
-                    r={lit ? 6 : 4}
-                    fill={lit ? round.color : "#6b7280"}
-                    opacity={lit ? 1 : 0.45}
-                    style={lit ? { filter: `drop-shadow(0 0 5px ${round.color})` } : undefined}
-                    className="transition-all duration-100"
+                <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
+                  <span className="font-heading flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/20 px-3 py-1 text-[10px] font-bold text-accent sm:text-xs">
+                    <Sparkles className="size-3.5" />
+                    Color revealed!
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <>
+                {silhouetteOk && (
+                  <Image
+                    src={round.silhouetteSrc}
+                    alt="Mystery shape outline"
+                    fill
+                    className="pointer-events-none object-contain p-3"
+                    sizes="(max-width: 640px) 55vw, 400px"
+                    onError={() => setSilhouetteOk(false)}
+                    priority
                   />
-                )
-              })}
-            </svg>
+                )}
+                {!silhouetteOk && (
+                  <svg
+                    viewBox="0 0 200 200"
+                    className="pointer-events-none absolute inset-0 size-full p-3 opacity-60"
+                    aria-hidden
+                  >
+                    <path d={round.svgPath} fill={round.color} fillOpacity={0.4} />
+                  </svg>
+                )}
+                <svg
+                  ref={svgRef}
+                  viewBox="0 0 200 200"
+                  className="relative z-10 h-full max-h-full w-full max-w-full touch-none select-none"
+                  onPointerMove={handlePointerMove}
+                  onPointerLeave={() => {
+                    prevPosRef.current = null
+                  }}
+                >
+                  {round.dots.map((dot, i) => {
+                    const lit = litDots.has(i)
+                    return (
+                      <circle
+                        key={i}
+                        cx={dot.x}
+                        cy={dot.y}
+                        r={lit ? 6 : 4}
+                        fill={lit ? round.color : "#9ca3af"}
+                        opacity={lit ? 1 : 0.7}
+                        style={
+                          lit ? { filter: `drop-shadow(0 0 6px ${round.color})` } : undefined
+                        }
+                        className="transition-all duration-100"
+                      />
+                    )
+                  })}
+                </svg>
+              </>
+            )}
           </div>
 
           {roundDone && (
@@ -440,7 +472,7 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
               className="font-heading h-11 shrink-0 rounded-full border-2 border-primary/40 text-sm font-extrabold shadow-lg shadow-primary/25 sm:h-12 sm:text-base"
             >
               <CheckCircle2 className="size-5" />
-              {roundIndex < LEVEL3_TRACE_ROUNDS.length - 1 ? "Next Picture →" : "Go to Quiz!"}
+              {roundIndex < rounds.length - 1 ? "Next Mystery Shape →" : "Go to Quiz!"}
             </Button>
           )}
         </section>
@@ -448,7 +480,7 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
 
       <footer className="relative z-10 shrink-0 border-t border-primary/20 bg-card/40 px-4 py-2 backdrop-blur-sm sm:py-2.5">
         <div className="mx-auto flex max-w-3xl items-center justify-center gap-2">
-          {LEVEL3_TRACE_ROUNDS.map((r, i) => (
+          {rounds.map((r, i) => (
             <div key={r.id} className="flex flex-col items-center gap-0.5">
               <span
                 className={cn(
@@ -465,7 +497,7 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
                   i === roundIndex ? "text-primary" : "text-muted-foreground",
                 )}
               >
-                {r.label}
+                {i < roundIndex ? r.label : i === roundIndex ? "?" : "·"}
               </span>
             </div>
           ))}

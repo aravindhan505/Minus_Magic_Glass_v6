@@ -152,15 +152,15 @@ function buildCarDots(): TraceDot[] {
   return [...body, ...cabin]
 }
 
-/** Kid traces the outline of a picture — 6 drawing-book rounds. */
+/** Full pool — each run picks LEVEL3_ROUNDS_PER_RUN at random. */
 export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
   {
     id: "butterfly",
     label: "Butterfly",
-    title: "Round 1 – Butterfly",
-    instruction: "Trace the butterfly's wings and body with your finger!",
+    title: "Mystery Shape",
+    instruction: "Trace every dot along the edges — complete the outline to reveal the picture!",
     hint: "Start at the top of the body, then sweep around each wing.",
-    doneText: "Beautiful! You traced the butterfly's edges!",
+    doneText: "Beautiful! You mapped every edge — it's a butterfly!",
     color: "#c084fc",
     colorSrc: `${L3_TRACE_IMAGES}/trace-butterfly-color.png`,
     silhouetteSrc: `${L3_TRACE_IMAGES}/trace-butterfly-silhouette.png`,
@@ -171,10 +171,10 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
   {
     id: "house",
     label: "House",
-    title: "Round 2 – House",
-    instruction: "Follow the dots around the house — roof and walls!",
+    title: "Mystery Shape",
+    instruction: "Trace every dot along the edges — complete the outline to reveal the picture!",
     hint: "Trace the pointy roof first, then go down each wall.",
-    doneText: "Great job! You found every edge of the house!",
+    doneText: "Great job! You mapped every edge — it's a house!",
     color: "#34d399",
     colorSrc: `${L3_TRACE_IMAGES}/trace-house-color.png`,
     silhouetteSrc: `${L3_TRACE_IMAGES}/trace-house-silhouette.png`,
@@ -184,10 +184,10 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
   {
     id: "rocket",
     label: "Rocket",
-    title: "Round 3 – Rocket",
-    instruction: "Trace the rocket from nose to fins!",
+    title: "Mystery Shape",
+    instruction: "Trace every dot along the edges — complete the outline to reveal the picture!",
     hint: "Start at the tip, slide down the sides, then trace the fins.",
-    doneText: "Blast off! You traced the whole rocket!",
+    doneText: "Blast off! You mapped every edge — it's a rocket!",
     color: "#f59e0b",
     colorSrc: `${L3_TRACE_IMAGES}/trace-rocket-color.png`,
     silhouetteSrc: `${L3_TRACE_IMAGES}/trace-rocket-silhouette.png`,
@@ -197,10 +197,10 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
   {
     id: "teddybear",
     label: "Teddy Bear",
-    title: "Round 4 – Teddy Bear",
-    instruction: "Trace around the teddy bear — ears, head, and tummy!",
+    title: "Mystery Shape",
+    instruction: "Trace every dot along the edges — complete the outline to reveal the picture!",
     hint: "Start at the top of one ear and go all the way around.",
-    doneText: "Aww! You traced every edge on the teddy bear!",
+    doneText: "Aww! You mapped every edge — it's a teddy bear!",
     color: "#fbbf24",
     colorSrc: `${L3_TRACE_IMAGES}/trace-teddybear-color.png`,
     silhouetteSrc: `${L3_TRACE_IMAGES}/trace-teddybear-silhouette.png`,
@@ -210,10 +210,10 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
   {
     id: "soccerball",
     label: "Soccer Ball",
-    title: "Round 5 – Soccer Ball",
-    instruction: "Trace the circle edge of the soccer ball!",
+    title: "Mystery Shape",
+    instruction: "Trace every dot along the edges — complete the outline to reveal the picture!",
     hint: "Follow the dots all the way around — like drawing a big circle.",
-    doneText: "Goal! You traced the whole ball edge!",
+    doneText: "Goal! You mapped every edge — it's a soccer ball!",
     color: "#38bdf8",
     colorSrc: `${L3_TRACE_IMAGES}/trace-soccerball-color.png`,
     silhouetteSrc: `${L3_TRACE_IMAGES}/trace-soccerball-silhouette.png`,
@@ -223,10 +223,10 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
   {
     id: "car",
     label: "Car",
-    title: "Round 6 – Car",
-    instruction: "Trace the car from bumper to roof and back!",
+    title: "Mystery Shape",
+    instruction: "Trace every dot along the edges — complete the outline to reveal the picture!",
     hint: "Go along the bottom, up the front, over the roof, and down the back.",
-    doneText: "Vroom! You traced the whole car outline!",
+    doneText: "Vroom! You mapped every edge — it's a car!",
     color: "#f472b6",
     colorSrc: `${L3_TRACE_IMAGES}/trace-car-color.png`,
     silhouetteSrc: `${L3_TRACE_IMAGES}/trace-car-silhouette.png`,
@@ -236,27 +236,52 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
 ]
 
 export const LEVEL3_TRACE_RADIUS = 18
-export const LEVEL3_REQUIRED_FRACTION = 0.92
+/** All dots must be lit — 100% edge trace before color reveal. */
+export const LEVEL3_REQUIRED_FRACTION = 1
+
+/** How many mystery shapes per activity run (picked from LEVEL3_TRACE_ROUNDS). */
+export const LEVEL3_ROUNDS_PER_RUN = 3
 
 export const LEVEL3_QUIZ_PASS_PERCENT = 67
 
 export const LEVEL3_QUIZ = [
   {
-    question: "What are you tracing along the picture?",
-    options: ["The edges and outlines", "The middle colors only", "Hidden words", "The background sky"],
+    question: "What were you tracing on the mystery shape?",
+    options: ["The edges and outlines", "The colorful middle", "Hidden words", "The background"],
     correct: 0,
   },
   {
-    question: "Where do edges hide in a picture?",
-    options: ["Where shapes meet or colors change", "Only in corners", "In the center dot", "Under the ground"],
+    question: "What is edge detection?",
+    options: [
+      "Finding the outlines where shapes meet",
+      "Mixing paint colors",
+      "Counting how many stars",
+      "Turning up the volume",
+    ],
     correct: 0,
   },
   {
-    question: "Which picture did you trace in Round 1?",
-    options: ["Butterfly", "Teddy Bear", "Soccer Ball", "Car"],
+    question: "What happens when you trace every dot?",
+    options: [
+      "The colorful picture is revealed!",
+      "The screen goes blank",
+      "A new planet unlocks",
+      "The dots disappear forever",
+    ],
     correct: 0,
   },
 ] as const
+
+/** Pick `count` random trace rounds without repeats. */
+export function getRandomLevel3Rounds(count = LEVEL3_ROUNDS_PER_RUN): Level3TraceRound[] {
+  const pool = [...LEVEL3_TRACE_ROUNDS]
+  const picked: Level3TraceRound[] = []
+  while (picked.length < count && pool.length > 0) {
+    const index = Math.floor(Math.random() * pool.length)
+    picked.push(pool.splice(index, 1)[0])
+  }
+  return picked
+}
 
 /** Minimum distance from point P to line segment AB. */
 export function distToSegment(

@@ -220,7 +220,7 @@ Each teammate builds ONE level module independently.
 |--------|-------------|--------|-----------|
 | Level 1: Numbers to Brightness | _[TBD]_ | 🔵 Ready to start | `level-1-numbers-to-brightness.tsx` |
 | Level 2: Brightness in Color | Buffy | ✅ Done | `level-2-brightness-in-color.tsx` — Color Potion RGB mixing |
-| Level 3: Edge Detection | Buffy | ✅ Done | `level-3-edge-detection.tsx` — picture tracing (butterfly/house/rocket) + quiz 2/3 |
+| Level 3: Edge Detection | Buffy | ✅ Done | Silhouette-first tracing · 3 random/6 · 100% reveals color · edge quiz 2/3 |
 | Level 4: Feature Recognition | Buffy | ✅ Done | `level-4-feature-recognition.tsx` — shape/color/texture rounds + visual quiz 2/3 |
 | Level 5: Object Detection | ✅ Done | Part 1 + Part 2 + CV quiz + full narrator audio wired |
 
