@@ -29,7 +29,8 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
   const [minuPose, setMinuPose] = useState<MinuPose>("pointing")
   const [statusText, setStatusText] = useState(LEVEL3_TRACE_ROUNDS[0].instruction)
   const [hintVisible, setHintVisible] = useState(false)
-  const [showPicture, setShowPicture] = useState(true)
+  const [showColorArt, setShowColorArt] = useState(true)
+  const [showSilhouette, setShowSilhouette] = useState(true)
 
   const [quizIndex, setQuizIndex] = useState(0)
   const [quizScore, setQuizScore] = useState(0)
@@ -44,7 +45,8 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
   const progressPct = Math.min(100, Math.round(progress * 100))
 
   useEffect(() => {
-    setShowPicture(true)
+    setShowColorArt(true)
+    setShowSilhouette(true)
   }, [roundIndex])
 
   useEffect(() => {
@@ -371,15 +373,26 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
             </p>
           </div>
 
-          <div className="relative flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-primary/20 bg-card/40 p-2">
-            {round.imageSrc && showPicture && (
+          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-black/80 p-2">
+            {showColorArt && (
               <Image
-                src={round.imageSrc}
+                src={round.colorSrc}
+                alt={round.label}
+                fill
+                className="pointer-events-none object-contain p-3"
+                sizes="(max-width: 640px) 55vw, 400px"
+                onError={() => setShowColorArt(false)}
+                priority
+              />
+            )}
+            {showSilhouette && (
+              <Image
+                src={round.silhouetteSrc}
                 alt=""
                 fill
-                className="pointer-events-none object-contain p-4 opacity-95"
+                className="pointer-events-none object-contain p-3 opacity-70 mix-blend-screen"
                 sizes="(max-width: 640px) 55vw, 400px"
-                onError={() => setShowPicture(false)}
+                onError={() => setShowSilhouette(false)}
                 priority
               />
             )}
@@ -392,41 +405,14 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
                 prevPosRef.current = null
               }}
             >
-              {!round.imageSrc || !showPicture ? (
-                <>
-                  <path
-                    d={round.svgPath}
-                    fill={round.color}
-                    fillOpacity={0.35}
-                    stroke={round.color}
-                    strokeWidth={2}
-                    strokeOpacity={0.5}
-                  />
-                  {round.id === "butterfly" && (
-                    <>
-                      <circle cx={92} cy={88} r={4} fill="#1f2937" />
-                      <circle cx={108} cy={88} r={4} fill="#1f2937" />
-                    </>
-                  )}
-                  {round.id === "house" && (
-                    <>
-                      <rect x={90} y={135} width={20} height={25} rx={2} fill="#78350f" />
-                      <rect x={118} y={125} width={16} height={16} fill="#7dd3fc" stroke="#0ea5e9" strokeWidth={1.5} />
-                    </>
-                  )}
-                  {round.id === "rocket" && (
-                    <>
-                      <circle cx={100} cy={110} r={8} fill="#7dd3fc" stroke="#0ea5e9" strokeWidth={1.5} />
-                      <rect x={94} y={145} width={12} height={8} rx={1} fill="#ef4444" />
-                    </>
-                  )}
-                </>
-              ) : (
+              {!showColorArt && (
                 <path
                   d={round.svgPath}
-                  fill="transparent"
-                  stroke="transparent"
-                  pointerEvents="none"
+                  fill={round.color}
+                  fillOpacity={0.35}
+                  stroke={round.color}
+                  strokeWidth={2}
+                  strokeOpacity={0.5}
                 />
               )}
               {round.dots.map((dot, i) => {

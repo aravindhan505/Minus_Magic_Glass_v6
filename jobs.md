@@ -347,16 +347,19 @@ public/minu/
 
 **After replacing files:** Run the robocopy sync (Section 1) and hard-refresh the browser.
 
-### 🖼️ Level 3 Trace Pictures (3 optional PNGs)
-**Waiting on:** User (you) — optional upgrade from built-in SVG silhouettes
-**Status:** 🟡 App works with SVG; PNG art optional
+### 🖼️ Level 3 Trace Pictures (12 PNGs — 6 pairs)
+**Waiting on:** User (you)
+**Status:** ✅ DONE — color + silhouette pairs wired (6 rounds)
 **Reference file:** `level3_assets/level3images.txt`
 
 ```
 public/images/level3/
-├── trace-butterfly.png
-├── trace-house.png
-└── trace-rocket.png
+├── trace-butterfly-color.png / trace-butterfly-silhouette.png
+├── trace-house-color.png / trace-house-silhouette.png
+├── trace-rocket-color.png / trace-rocket-silhouette.png
+├── trace-teddybear-color.png / trace-teddybear-silhouette.png
+├── trace-soccerball-color.png / trace-soccerball-silhouette.png
+└── trace-car-color.png / trace-car-silhouette.png
 ```
 
 ### 🖼️ Level 4 Comparison Images (5 files)

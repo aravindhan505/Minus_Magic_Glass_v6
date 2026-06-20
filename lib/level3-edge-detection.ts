@@ -1,5 +1,7 @@
 export type TraceDot = { x: number; y: number }
 
+export const L3_TRACE_IMAGES = "/images/level3"
+
 export type Level3TraceRound = {
   id: string
   label: string
@@ -9,10 +11,12 @@ export type Level3TraceRound = {
   doneText: string
   /** Accent for progress bar and lit dots */
   color: string
-  /** Filled silhouette shown under trace dots (drawing-book style) */
+  /** Full-color picture the kid sees (drawing-book page) */
+  colorSrc: string
+  /** Green-outline guide — public/images/level3/trace-*-silhouette.png */
+  silhouetteSrc: string
+  /** SVG fallback if PNGs fail to load */
   svgPath: string
-  /** Optional PNG upgrade — place in public/images/level3/ */
-  imageSrc?: string
   dots: TraceDot[]
 }
 
@@ -110,7 +114,45 @@ function buildRocketDots(): TraceDot[] {
   return [...nose, ...body, ...leftFin, ...rightFin]
 }
 
-/** Kid traces the outline of a picture — 3 drawing-book rounds. */
+function buildTeddyBearDots(): TraceDot[] {
+  const head = ellipseDots(100, 72, 32, 30, 12)
+  const body = ellipseDots(100, 130, 42, 48, 16)
+  const leftEar = ellipseDots(78, 52, 12, 12, 6)
+  const rightEar = ellipseDots(122, 52, 12, 12, 6)
+  return [...head, ...body, ...leftEar, ...rightEar]
+}
+
+function buildSoccerBallDots(): TraceDot[] {
+  return ellipseDots(100, 105, 58, 58, 28)
+}
+
+function buildCarDots(): TraceDot[] {
+  const body = polygonDots(
+    [
+      { x: 38, y: 130 },
+      { x: 48, y: 105 },
+      { x: 78, y: 88 },
+      { x: 132, y: 88 },
+      { x: 158, y: 105 },
+      { x: 168, y: 130 },
+      { x: 168, y: 155 },
+      { x: 38, y: 155 },
+    ],
+    5,
+  )
+  const cabin = polygonDots(
+    [
+      { x: 78, y: 88 },
+      { x: 95, y: 72 },
+      { x: 125, y: 72 },
+      { x: 132, y: 88 },
+    ],
+    4,
+  )
+  return [...body, ...cabin]
+}
+
+/** Kid traces the outline of a picture — 6 drawing-book rounds. */
 export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
   {
     id: "butterfly",
@@ -120,9 +162,10 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
     hint: "Start at the top of the body, then sweep around each wing.",
     doneText: "Beautiful! You traced the butterfly's edges!",
     color: "#c084fc",
+    colorSrc: `${L3_TRACE_IMAGES}/trace-butterfly-color.png`,
+    silhouetteSrc: `${L3_TRACE_IMAGES}/trace-butterfly-silhouette.png`,
     svgPath:
       "M72 95 C35 40, 20 130, 72 150 C72 120, 72 70, 100 55 C100 70, 100 120, 100 150 C100 130, 85 40, 128 95 C180 40, 165 130, 128 150 C128 120, 128 70, 100 55 Z",
-    imageSrc: "/images/level3/trace-butterfly.png",
     dots: buildButterflyDots(),
   },
   {
@@ -133,8 +176,9 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
     hint: "Trace the pointy roof first, then go down each wall.",
     doneText: "Great job! You found every edge of the house!",
     color: "#34d399",
+    colorSrc: `${L3_TRACE_IMAGES}/trace-house-color.png`,
+    silhouetteSrc: `${L3_TRACE_IMAGES}/trace-house-silhouette.png`,
     svgPath: "M45 110 L100 45 L155 110 L145 110 L145 180 L55 180 L55 110 Z",
-    imageSrc: "/images/level3/trace-house.png",
     dots: buildHouseDots(),
   },
   {
@@ -145,9 +189,49 @@ export const LEVEL3_TRACE_ROUNDS: Level3TraceRound[] = [
     hint: "Start at the tip, slide down the sides, then trace the fins.",
     doneText: "Blast off! You traced the whole rocket!",
     color: "#f59e0b",
+    colorSrc: `${L3_TRACE_IMAGES}/trace-rocket-color.png`,
+    silhouetteSrc: `${L3_TRACE_IMAGES}/trace-rocket-silhouette.png`,
     svgPath: "M100 28 L112 70 L112 165 L132 175 L112 175 L88 175 L68 175 L88 165 L88 70 Z",
-    imageSrc: "/images/level3/trace-rocket.png",
     dots: buildRocketDots(),
+  },
+  {
+    id: "teddybear",
+    label: "Teddy Bear",
+    title: "Round 4 – Teddy Bear",
+    instruction: "Trace around the teddy bear — ears, head, and tummy!",
+    hint: "Start at the top of one ear and go all the way around.",
+    doneText: "Aww! You traced every edge on the teddy bear!",
+    color: "#fbbf24",
+    colorSrc: `${L3_TRACE_IMAGES}/trace-teddybear-color.png`,
+    silhouetteSrc: `${L3_TRACE_IMAGES}/trace-teddybear-silhouette.png`,
+    svgPath: "M78 52 A12 12 0 1 1 78 52 M122 52 A12 12 0 1 1 122 52 M68 72 A32 30 0 1 1 132 72 A42 48 0 1 1 58 130 Z",
+    dots: buildTeddyBearDots(),
+  },
+  {
+    id: "soccerball",
+    label: "Soccer Ball",
+    title: "Round 5 – Soccer Ball",
+    instruction: "Trace the circle edge of the soccer ball!",
+    hint: "Follow the dots all the way around — like drawing a big circle.",
+    doneText: "Goal! You traced the whole ball edge!",
+    color: "#38bdf8",
+    colorSrc: `${L3_TRACE_IMAGES}/trace-soccerball-color.png`,
+    silhouetteSrc: `${L3_TRACE_IMAGES}/trace-soccerball-silhouette.png`,
+    svgPath: "M42 105 A58 58 0 1 1 158 105 A58 58 0 1 1 42 105 Z",
+    dots: buildSoccerBallDots(),
+  },
+  {
+    id: "car",
+    label: "Car",
+    title: "Round 6 – Car",
+    instruction: "Trace the car from bumper to roof and back!",
+    hint: "Go along the bottom, up the front, over the roof, and down the back.",
+    doneText: "Vroom! You traced the whole car outline!",
+    color: "#f472b6",
+    colorSrc: `${L3_TRACE_IMAGES}/trace-car-color.png`,
+    silhouetteSrc: `${L3_TRACE_IMAGES}/trace-car-silhouette.png`,
+    svgPath: "M38 155 L38 130 L48 105 L78 88 L132 88 L158 105 L168 130 L168 155 Z",
+    dots: buildCarDots(),
   },
 ]
 
@@ -169,7 +253,7 @@ export const LEVEL3_QUIZ = [
   },
   {
     question: "Which picture did you trace in Round 1?",
-    options: ["Butterfly", "House", "Rocket", "Car"],
+    options: ["Butterfly", "Teddy Bear", "Soccer Ball", "Car"],
     correct: 0,
   },
 ] as const
