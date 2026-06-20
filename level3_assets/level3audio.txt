@@ -1,0 +1,73 @@
+# Level 3: Edge Detection — Narrator Audio Guide
+# ==============================================
+# Project: Minu's Magic Glasses
+# Planet: Edge Detection (Level 3)
+#
+# FLOW
+# ────
+# 1. Level intro — plays on enter (level-screen.tsx → narrator_level3_intro.mp3)
+#    OR future bridge: narrator_level3_intro.mp3 in public/audio/level_3/
+# 2. Activity — 3 picture-tracing rounds (butterfly → house → rocket)
+# 3. Quiz — 3 text MCQs · pass 2/3 (67%)
+#
+# WHERE TO PUT FILES (preferred level pack)
+# ───────────────────────────────────────
+# public/audio/level_3/
+#
+# Fallback until pack exists: public/audio/minu/narrator_level3_*.mp3
+#
+# VOICE: Warm PBS-style adult narrator, ages 5–8, clear and encouraging
+# Format: MP3 44.1 kHz, peak -3 dB
+#
+# ============================================================
+# FILES TO GENERATE
+# ============================================================
+#
+# narrator_level3_intro.mp3
+#   Trigger: Level 3 opens
+#   Text: "Edge Detection Planet! Pictures hide secret outlines. Trace the
+#   dots with your finger — like a magic coloring book — to find every edge!"
+#
+# narrator_level3_round_butterfly.mp3
+#   Trigger: Round 1 starts
+#   Text: "First picture: a butterfly! Slide your finger along the dots to
+#   trace its wings and body."
+#
+# narrator_level3_round_house.mp3
+#   Trigger: Round 2 starts
+#   Text: "Next up: a house! Trace the roof and walls — follow every dot!"
+#
+# narrator_level3_round_rocket.mp3
+#   Trigger: Round 3 starts
+#   Text: "Last picture: a rocket! Trace from the nose cone down to the fins!"
+#
+# narrator_level3_trace_complete.mp3
+#   Trigger: Each round fully traced
+#   Text: "You found all the edges! Amazing tracing!"
+#
+# narrator_level3_quiz_intro.mp3
+#   Trigger: Quiz phase starts
+#   Text: "Edge Detective Quiz! Answer three quick questions. Get two right to pass!"
+#
+# narrator_level3_quiz_pass.mp3
+#   Trigger: Quiz passed (2/3+)
+#   Text: "Super detective work! Minu's edge lens is calibrated!"
+#
+# narrator_level3_quiz_fail.mp3
+#   Trigger: Quiz failed
+#   Text: "Good try! Trace and think once more, then retry the quiz."
+#
+# Quiz correct/incorrect: use shared files in public/audio/minu/
+#   narrator_quiz_correct.mp3, narrator_quiz_incorrect.mp3, etc.
+#
+# ============================================================
+# CHECKLIST — 8 Level 3 narrator files
+# ============================================================
+# [ ] narrator_level3_intro.mp3
+# [ ] narrator_level3_round_butterfly.mp3
+# [ ] narrator_level3_round_house.mp3
+# [ ] narrator_level3_round_rocket.mp3
+# [ ] narrator_level3_trace_complete.mp3
+# [ ] narrator_level3_quiz_intro.mp3
+# [ ] narrator_level3_quiz_pass.mp3
+# [ ] narrator_level3_quiz_fail.mp3

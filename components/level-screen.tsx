@@ -24,6 +24,8 @@ type LevelScreenProps = {
 
 // Lazy-load level modules (only imported when that level is active)
 const Level2 = lazy(() => import("@/components/level-2-brightness-in-color"))
+const Level3 = lazy(() => import("@/components/level-3-edge-detection"))
+const Level4 = lazy(() => import("@/components/level-4-feature-recognition"))
 const Level5 = lazy(() => import("@/components/level-5-image-classification"))
 
 /**
@@ -32,6 +34,7 @@ const Level5 = lazy(() => import("@/components/level-5-image-classification"))
 export function LevelScreen({ level, onBack, onComplete }: LevelScreenProps) {
   useEffect(() => {
     // Level 2/5 intros are chained inside each module (bridge screens + narrator timing).
+    // Level 3/4 use global intro from /audio/minu/ until level-specific packs are added.
     if (level.id === 2 || level.id === 5) return () => stopNarrator()
     const introFile = LEVEL_INTRO_FILES[level.id]
     if (introFile) playNarratorFile(introFile)
@@ -47,6 +50,24 @@ export function LevelScreen({ level, onBack, onComplete }: LevelScreenProps) {
     )
   }
 
+  // Level 3: Edge Detection — picture tracing
+  if (level.id === 3) {
+    return (
+      <Suspense fallback={<PlaceholderLevel level={level} onBack={onBack} onComplete={onComplete} />}>
+        <Level3 onComplete={() => onComplete(level.id)} onBack={onBack} />
+      </Suspense>
+    )
+  }
+
+  // Level 4: Feature Recognition — shape / color / texture
+  if (level.id === 4) {
+    return (
+      <Suspense fallback={<PlaceholderLevel level={level} onBack={onBack} onComplete={onComplete} />}>
+        <Level4 onComplete={() => onComplete(level.id)} onBack={onBack} />
+      </Suspense>
+    )
+  }
+
   // Level 5: Object Detection — full module
   if (level.id === 5) {
     return (
@@ -56,7 +77,7 @@ export function LevelScreen({ level, onBack, onComplete }: LevelScreenProps) {
     )
   }
 
-  // Levels 1–4: placeholder until teammates submit modules
+  // Level 1: placeholder until module is built
   return <PlaceholderLevel level={level} onBack={onBack} onComplete={onComplete} />
 }
 

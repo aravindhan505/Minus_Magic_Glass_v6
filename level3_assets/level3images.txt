@@ -1,0 +1,68 @@
+# Level 3: Edge Detection — Trace Picture Assets
+# ==============================================
+# Project: Minu's Magic Glasses
+# Planet: Edge Detection (Level 3)
+#
+# PURPOSE
+# ───────
+# Optional PNG upgrades for the 3 tracing rounds. The app works today with
+# built-in SVG silhouettes (butterfly, house, rocket). Drop these PNGs in
+# public/images/level3/ to replace them with richer kid-friendly art.
+#
+# GAMEPLAY
+# ────────
+# Kid sees a picture, then traces glowing dots along the OUTLINE (drawing-book
+# style). Dots are pre-placed in lib/level3-edge-detection.ts — if you change
+# the art shape significantly, tell the dev to adjust dot paths.
+#
+# WHERE TO PUT FILES
+# ──────────────────
+# public/images/level3/
+#
+# FILE NAMING (exact)
+# ───────────────────
+# trace-butterfly.png   — Round 1
+# trace-house.png       — Round 2
+# trace-rocket.png      — Round 3
+#
+# ART DIRECTION
+# ─────────────
+# - Kid-friendly cartoon style (ages 5–8), bold outlines
+# - Single subject centered on transparent or dark-friendly background
+# - Subject should fit roughly square framing (1:1)
+# - OUTLINE should match a simple silhouette — tracing dots sit on the edge
+# - Bright, cheerful colors (purple/teal/orange accents OK)
+# - No tiny background clutter — keep edges easy to trace
+# - PNG, ~512×512 or 1024×1024
+#
+# ============================================================
+# PROMPTS (Z-Image Turbo / similar)
+# ============================================================
+#
+# trace-butterfly.png
+#   Prompt: "Cute cartoon butterfly for kids coloring book, front view,
+#   symmetrical wings, simple bold outline, purple and pink wings, friendly
+#   style, flat illustration, transparent background, no text"
+#   Notes: Wings should align with dot path (wide wings, small body center)
+#
+# trace-house.png
+#   Prompt: "Cute cartoon house for kids coloring book, simple square walls,
+#   triangle roof, one door and one window, bold clean outline, green roof
+#   red walls, flat illustration, transparent background, no text"
+#   Notes: Classic house silhouette — roof peak centered
+#
+# trace-rocket.png
+#   Prompt: "Cute cartoon rocket ship for kids coloring book, simple tall
+#   rocket with nose cone and two fins, round window, bold outline, orange
+#   and white, flat illustration, transparent background, no text"
+#   Notes: Rocket centered, fins at bottom — matches tracing dots
+#
+# ============================================================
+# CHECKLIST
+# ============================================================
+# [ ] trace-butterfly.png
+# [ ] trace-house.png
+# [ ] trace-rocket.png
+#
+# After placing files, tell the dev:
+# "Level 3 trace PNGs are in public/images/level3/"

@@ -1,0 +1,63 @@
+# Level 4: Feature Recognition — Comparison Image Assets
+# ======================================================
+# Project: Minu's Magic Glasses
+# Planet: Feature Recognition (Level 4)
+#
+# CURRENT STATUS
+# ──────────────
+# 5 comparison pairs from friend's reference are wired (renamed, no spaces):
+#   public/images/level4/apple-vs-tomato.png
+#   public/images/level4/orange-vs-tennis-ball.png
+#   public/images/level4/coconut-vs-basketball.png
+#   public/images/level4/dolphin.png
+#   public/images/level4/football-vs-golf.png
+#
+# ACTIVITY ANSWERS (verified in lib/level4-feature-recognition.ts)
+# ────────────────────────────────────────────────────────────────
+# Round 1 Apple vs Tomato        → SHAPE
+# Round 2 Orange vs Tennis Ball  → COLOR
+# Round 3 Coconut vs Basketball  → TEXTURE
+# Round 4 Dolphin (real vs plush)→ TEXTURE
+# Round 5 Football vs Golf       → TEXTURE
+#
+# OPTIONAL FUTURE UPGRADES
+# ────────────────────────
+# Add 1–2 new pairs so each category (Shape / Color / Texture) has a
+# dedicated "pure" example without overlap. Suggested additions:
+#
+# color-pair-red-blue-balls.png
+#   Prompt: "Side by side for kids app: identical smooth spheres, one bright
+#   red, one bright blue, same size, white background, bold cartoon style,
+#   no text"
+#   Use for: pure COLOR round (shape and texture match)
+#
+# texture-pair-wood-metal.png
+#   Prompt: "Side by side: two identical cubes, one rough wood grain texture,
+#   one shiny metal, same brown-ish color, kid-friendly cartoon, white bg"
+#   Use for: pure TEXTURE round (shape and color similar)
+#
+# shape-pair-star-circle.png
+#   Prompt: "Side by side: yellow star and yellow circle, same color and
+#   smooth texture, different outlines only, kid cartoon, white bg"
+#   Use for: pure SHAPE round
+#
+# ART RULES FOR ALL L4 PAIRS
+# ──────────────────────────
+# - Two subjects side by side, equal visual weight
+# - Transparent or white background (dark theme uses drop shadow)
+# - Kid-friendly, recognizable objects
+# - PNG ~800×400 or similar landscape aspect
+#
+# ============================================================
+# CHECKLIST (current set — already in repo)
+# ============================================================
+# [x] apple-vs-tomato.png
+# [x] orange-vs-tennis-ball.png
+# [x] coconut-vs-basketball.png
+# [x] dolphin.png
+# [x] football-vs-golf.png
+#
+# Optional additions:
+# [ ] color-pair-red-blue-balls.png
+# [ ] texture-pair-wood-metal.png
+# [ ] shape-pair-star-circle.png

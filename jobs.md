@@ -220,8 +220,8 @@ Each teammate builds ONE level module independently.
 |--------|-------------|--------|-----------|
 | Level 1: Numbers to Brightness | _[TBD]_ | 🔵 Ready to start | `level-1-numbers-to-brightness.tsx` |
 | Level 2: Brightness in Color | Buffy | ✅ Done | `level-2-brightness-in-color.tsx` — Color Potion RGB mixing |
-| Level 3: Edge Detection | _[TBD]_ | 🔵 Ready to start | `level-3-edge-detection.tsx` |
-| Level 4: Feature Recognition | _[TBD]_ | 🔵 Ready to start | `level-4-feature-recognition.tsx` |
+| Level 3: Edge Detection | Buffy | ✅ Done | `level-3-edge-detection.tsx` — picture tracing (butterfly/house/rocket) + quiz 2/3 |
+| Level 4: Feature Recognition | Buffy | ✅ Done | `level-4-feature-recognition.tsx` — shape/color/texture rounds + visual quiz 2/3 |
 | Level 5: Object Detection | ✅ Done | Part 1 + Part 2 + CV quiz + full narrator audio wired |
 
 **⚠️ IMPORTANT:** Each module builder MUST read:
@@ -231,7 +231,7 @@ Each teammate builds ONE level module independently.
 ### Phase 4: Integration — ⏳ WAITING ON PHASE 3
 | Task | Status | Owner | Notes |
 |------|--------|-------|-------|
-| Wire all 5 modules into `level-screen.tsx` | 🟡 Partial | Buffy | Levels 2 + 5 wired; 1, 3, 4 pending |
+| Wire all 5 modules into `level-screen.tsx` | 🟡 Partial | Buffy | Levels 2, 3, 4, 5 wired; Level 1 placeholder |
 | Update `level-data.ts` with all level configs | ❌ Pending | Buffy | After all modules received |
 | Update CalibrationMap with glasses progress UI | ❌ Pending | Buffy | |
 | Build `celebration-screen.tsx` (final screen) | ❌ Pending | Buffy | After all 5 levels complete |
@@ -286,8 +286,14 @@ public/audio/minu/
 - Helper: `lib/level2-audio.ts` → `playLevel2Narrator()` / `playLevel2Then()`
 - Optional 4 Minu L2 reactions: not generated (skipped)
 
-**Files still needed (16 narrator + 30 Minu):**
-- Level 1, 3, 4 intro/instruction/quiz narrator files (see `minu-dialogues.txt`)
+**Level 3 files (`public/audio/level_3/`) — 0/8, spec ready:**
+- `level3_assets/level3audio.txt`
+
+**Level 4 files (`public/audio/level_4/`) — 0/9, spec ready:**
+- `level4_assets/level4audio.txt`
+
+**Files still needed (Level 1 narrator + 30 Minu):**
+- Level 1 intro/instruction/quiz narrator files (see `minu-dialogues.txt`)
 - 30 Minu reaction files + 5 idle/special (see `minu-dialogues.txt` Sections 5–6)
 
 **File naming convention:**
@@ -341,29 +347,41 @@ public/minu/
 
 **After replacing files:** Run the robocopy sync (Section 1) and hard-refresh the browser.
 
-### 🖼️ Other Level Images (20+ files)
-**Waiting on:** User (you) + teammates
-**Status:** ❌ NOT STARTED
+### 🖼️ Level 3 Trace Pictures (3 optional PNGs)
+**Waiting on:** User (you) — optional upgrade from built-in SVG silhouettes
+**Status:** 🟡 App works with SVG; PNG art optional
+**Reference file:** `level3_assets/level3images.txt`
 
-**Where to put the files:**
+```
+public/images/level3/
+├── trace-butterfly.png
+├── trace-house.png
+└── trace-rocket.png
+```
+
+### 🖼️ Level 4 Comparison Images (5 files)
+**Waiting on:** User (you) — core set done from friend's reference
+**Status:** ✅ DONE — `public/images/level4/` (5 pairs, kebab-case names)
+**Reference file:** `level4_assets/level4images.txt` (optional pure S/C/T pairs listed)
+
+```
+public/images/level4/
+├── apple-vs-tomato.png
+├── orange-vs-tennis-ball.png
+├── coconut-vs-basketball.png
+├── dolphin.png
+└── football-vs-golf.png
+```
+
+### 🖼️ Other Level Images (Level 1 + legacy spec)
+**Waiting on:** User (you)
+**Status:** ❌ NOT STARTED (Level 1 brightness pair)
+
 ```
 public/images/
 ├── level1-bright.png
-├── level1-dark.png
-├── level2-colorful.png
-├── level2-grid.png
-├── level3-cartoon.png
-├── level3-edges.png
-├── level4-shapes.png
-├── level4-regions.png
-└── quiz/
-    ├── q1-bright.png, q1-dark.png
-    ├── q2-red.png, q2-green.png, q2-blue.png
-    ├── q3-edges.png, q3-original.png
-    └── q4-3regions.png, q4-many.png, q4-1region.png
+└── level1-dark.png
 ```
-
-**After placing files, tell Buffy:** "I've generated the level images"
 
 ### 🪐 Planet Map Planet PNGs (5 files)
 **Waiting on:** User (you)
