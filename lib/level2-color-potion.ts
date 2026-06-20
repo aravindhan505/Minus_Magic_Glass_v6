@@ -267,6 +267,9 @@ export function getRandomLevel2Rounds(count = LEVEL2_ROUNDS_REQUIRED): Array<{
   return rounds
 }
 
+/** 2 of 3 correct passes the Level 2 quiz (67%). */
+export const LEVEL2_QUIZ_PASS_PERCENT = 67
+
 /** End-of-level quiz — RGB concepts, no external quiz PNGs required. */
 export const LEVEL2_QUIZ: QuizQuestion[] = [
   {
@@ -283,8 +286,8 @@ export const LEVEL2_QUIZ: QuizQuestion[] = [
   },
   {
     type: "hands_on",
-    question: "Make a purple potion! Red and Blue high, Green lower.",
-    targetSliderValues: { r: 180, g: 60, b: 200 },
+    question: "Make PURPLE! Push Red and Blue high, and keep Green low.",
+    targetSliderValues: { r: 220, g: 40, b: 220 },
     tolerance: 45,
   },
 ]

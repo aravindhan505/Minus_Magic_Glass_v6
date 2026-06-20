@@ -26,6 +26,7 @@ import {
   COLOR_MATCH_TOLERANCE,
   DEFAULT_MIX_COLOR,
   LEVEL2_QUIZ,
+  LEVEL2_QUIZ_PASS_PERCENT,
   LEVEL2_ROUNDS_REQUIRED,
   colorsMatch,
   formatItemName,
@@ -297,6 +298,7 @@ export default function Level2BrightnessInColor({ onComplete, onBack }: LevelAct
             key={quizKey}
             questions={LEVEL2_QUIZ}
             compact
+            passPercent={LEVEL2_QUIZ_PASS_PERCENT}
             questionNarratorEnabled={quizIntroDone}
             onQuestionStart={handleQuizQuestionStart}
             onPass={handleQuizPass}
