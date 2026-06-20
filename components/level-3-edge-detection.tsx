@@ -13,10 +13,14 @@ import {
   LEVEL3_QUIZ,
   LEVEL3_QUIZ_PASS_PERCENT,
   LEVEL3_REQUIRED_FRACTION,
-  LEVEL3_TRACE_RADIUS,
   getRandomLevel3Rounds,
   distToSegment,
+  type TraceDot,
 } from "@/lib/level3-edge-detection"
+import {
+  extractTraceDotsFromSilhouette,
+  traceMetricsForImage,
+} from "@/lib/level3-trace-dots"
 import { cn } from "@/lib/utils"
 
 type Phase = "activity" | "quiz"
@@ -36,6 +40,14 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
   )
   const [hintVisible, setHintVisible] = useState(false)
   const [silhouetteOk, setSilhouetteOk] = useState(true)
+  const [traceDots, setTraceDots] = useState<TraceDot[]>([])
+  const [viewBox, setViewBox] = useState({ w: 1, h: 1 })
+  const [traceMetrics, setTraceMetrics] = useState({
+    traceRadius: 10,
+    dotLit: 4,
+    dotUnlit: 2.5,
+  })
+  const [dotsLoading, setDotsLoading] = useState(true)
 
   const [quizIndex, setQuizIndex] = useState(0)
   const [quizScore, setQuizScore] = useState(0)
@@ -46,13 +58,40 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
   const svgRef = useRef<SVGSVGElement>(null)
   const prevPosRef = useRef<{ x: number; y: number } | null>(null)
   const round = rounds[roundIndex]
-  const progress = round ? litDots.size / round.dots.length : 0
+  const dotCount = traceDots.length || 1
+  const progress = litDots.size / dotCount
   const progressPct = Math.min(100, Math.round(progress * 100))
 
   useEffect(() => {
+    if (!round) return
+    let cancelled = false
+    setDotsLoading(true)
+    setLitDots(new Set())
     setSilhouetteOk(true)
     setColorRevealed(false)
-  }, [roundIndex])
+    setRoundDone(false)
+    prevPosRef.current = null
+
+    extractTraceDotsFromSilhouette(round.silhouetteSrc)
+      .then(({ dots, width, height }) => {
+        if (cancelled) return
+        setTraceDots(dots)
+        setViewBox({ w: width, h: height })
+        setTraceMetrics(traceMetricsForImage(width, height))
+        setDotsLoading(false)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setTraceDots(round.dots)
+        setViewBox({ w: 200, h: 200 })
+        setTraceMetrics(traceMetricsForImage(200, 200))
+        setDotsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [round])
 
   useEffect(() => {
     if (!round || roundDone) return
@@ -71,7 +110,7 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
-      if (roundDone || !round) return
+      if (roundDone || !round || dotsLoading || traceDots.length === 0) return
       const svg = svgRef.current
       if (!svg) return
 
@@ -86,20 +125,21 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
 
       const prev = prevPosRef.current
       prevPosRef.current = { x: curX, y: curY }
+      const hitRadius = traceMetrics.traceRadius
 
       setLitDots((prevDots) => {
         const next = new Set(prevDots)
-        round.dots.forEach((dot, i) => {
+        traceDots.forEach((dot, i) => {
           if (next.has(i)) return
           const dist = prev
             ? distToSegment(dot.x, dot.y, prev.x, prev.y, curX, curY)
             : Math.sqrt((dot.x - curX) ** 2 + (dot.y - curY) ** 2)
-          if (dist <= LEVEL3_TRACE_RADIUS) next.add(i)
+          if (dist <= hitRadius) next.add(i)
         })
         return next.size !== prevDots.size ? next : prevDots
       })
     },
-    [round, roundDone],
+    [round, roundDone, dotsLoading, traceDots, traceMetrics.traceRadius],
   )
 
   const goNextRound = () => {
@@ -335,7 +375,7 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
               {statusText}
             </p>
           </div>
-          {!colorRevealed && (
+          {!colorRevealed && !dotsLoading && (
             <div className="shrink-0 rounded-2xl border border-border/50 bg-card/60 px-3 py-2">
               <p className="font-heading mb-1.5 text-center text-[10px] font-bold text-muted-foreground sm:text-xs">
                 Edges traced: {progressPct}%
@@ -394,14 +434,14 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
             </p>
           </div>
 
-          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-black p-2">
+          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-black">
             {colorRevealed ? (
               <div className="relative size-full animate-pop-in">
                 <Image
                   src={round.colorSrc}
                   alt={round.label}
                   fill
-                  className="object-contain p-3"
+                  className="object-contain"
                   sizes="(max-width: 640px) 55vw, 400px"
                   priority
                 />
@@ -419,7 +459,7 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
                     src={round.silhouetteSrc}
                     alt="Mystery shape outline"
                     fill
-                    className="pointer-events-none object-contain p-3"
+                    className="pointer-events-none object-contain"
                     sizes="(max-width: 640px) 55vw, 400px"
                     onError={() => setSilhouetteOk(false)}
                     priority
@@ -427,40 +467,49 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
                 )}
                 {!silhouetteOk && (
                   <svg
-                    viewBox="0 0 200 200"
-                    className="pointer-events-none absolute inset-0 size-full p-3 opacity-60"
+                    viewBox={`0 0 ${viewBox.w} ${viewBox.h}`}
+                    preserveAspectRatio="xMidYMid meet"
+                    className="pointer-events-none absolute inset-0 size-full opacity-60"
                     aria-hidden
                   >
                     <path d={round.svgPath} fill={round.color} fillOpacity={0.4} />
                   </svg>
                 )}
-                <svg
-                  ref={svgRef}
-                  viewBox="0 0 200 200"
-                  className="relative z-10 h-full max-h-full w-full max-w-full touch-none select-none"
-                  onPointerMove={handlePointerMove}
-                  onPointerLeave={() => {
-                    prevPosRef.current = null
-                  }}
-                >
-                  {round.dots.map((dot, i) => {
-                    const lit = litDots.has(i)
-                    return (
-                      <circle
-                        key={i}
-                        cx={dot.x}
-                        cy={dot.y}
-                        r={lit ? 6 : 4}
-                        fill={lit ? round.color : "#9ca3af"}
-                        opacity={lit ? 1 : 0.7}
-                        style={
-                          lit ? { filter: `drop-shadow(0 0 6px ${round.color})` } : undefined
-                        }
-                        className="transition-all duration-100"
-                      />
-                    )
-                  })}
-                </svg>
+                {!dotsLoading && traceDots.length > 0 && (
+                  <svg
+                    ref={svgRef}
+                    viewBox={`0 0 ${viewBox.w} ${viewBox.h}`}
+                    preserveAspectRatio="xMidYMid meet"
+                    className="absolute inset-0 z-10 size-full touch-none select-none"
+                    onPointerMove={handlePointerMove}
+                    onPointerLeave={() => {
+                      prevPosRef.current = null
+                    }}
+                  >
+                    {traceDots.map((dot, i) => {
+                      const lit = litDots.has(i)
+                      return (
+                        <circle
+                          key={i}
+                          cx={dot.x}
+                          cy={dot.y}
+                          r={lit ? traceMetrics.dotLit : traceMetrics.dotUnlit}
+                          fill={lit ? round.color : "#d1d5db"}
+                          opacity={lit ? 1 : 0.85}
+                          style={
+                            lit ? { filter: `drop-shadow(0 0 4px ${round.color})` } : undefined
+                          }
+                          className="transition-all duration-75"
+                        />
+                      )
+                    })}
+                  </svg>
+                )}
+                {dotsLoading && (
+                  <p className="absolute z-20 font-heading text-xs font-bold text-muted-foreground">
+                    Loading edges…
+                  </p>
+                )}
               </>
             )}
           </div>
