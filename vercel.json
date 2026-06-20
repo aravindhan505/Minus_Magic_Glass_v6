@@ -1,3 +1,9 @@
 {
-  "buildCommand": "pnpm run vercel-build"
+  "buildCommand": "pnpm run vercel-build",
+  "installCommand": "git lfs pull || true; pnpm install --frozen-lockfile",
+  "build": {
+    "env": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1"
+    }
+  }
 }

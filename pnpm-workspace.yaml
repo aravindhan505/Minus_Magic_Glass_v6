@@ -1,3 +1,11 @@
+packages:
+  - .
+
+# pnpm 11 defaults to a 24h minimumReleaseAge, which re-verifies every
+# lockfile entry on CI and can stall or fail Vercel installs.
+minimumReleaseAge: 0
+trustLockfile: true
+
 allowBuilds:
   sharp: true
   msw: false
