@@ -227,6 +227,40 @@ export function playInspect(): void {
   setTimeout(() => playTone(1200, 0.08, "sine", 0.06), 60)
 }
 
+let _lastTraceDotAt = 0
+
+/** Trace dot fill — soft bloop when a kid lights an edge dot (throttled). */
+export function playTraceDot(litCount = 0): void {
+  if (!_soundEnabled) return
+  const now = Date.now()
+  if (now - _lastTraceDotAt < 35) return
+  _lastTraceDotAt = now
+
+  const ctx = getAudioContext()
+  if (!ctx) return
+  if (ctx.state === "suspended") ctx.resume()
+
+  const scale = [523, 587, 659, 698, 784, 880, 988]
+  const freq = scale[litCount % scale.length] ?? 659
+
+  const oscillator = ctx.createOscillator()
+  const gainNode = ctx.createGain()
+
+  oscillator.type = "sine"
+  oscillator.frequency.setValueAtTime(freq * 0.92, ctx.currentTime)
+  oscillator.frequency.exponentialRampToValueAtTime(freq * 1.08, ctx.currentTime + 0.045)
+
+  const vol = 0.07 * _sfxVolume
+  gainNode.gain.setValueAtTime(vol, ctx.currentTime)
+  gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07)
+
+  oscillator.connect(gainNode)
+  gainNode.connect(ctx.destination)
+
+  oscillator.start(ctx.currentTime)
+  oscillator.stop(ctx.currentTime + 0.08)
+}
+
 // ─── Narrator MP3 Playback ─────────────────────────────────
 
 let currentNarratorAudio: HTMLAudioElement | null = null

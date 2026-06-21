@@ -251,6 +251,22 @@
   .animate-twinkle {
     animation: twinkle 2.4s ease-in-out infinite;
   }
+  @keyframes trace-hint-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.35);
+    }
+  }
+  .animate-trace-hint-pulse {
+    animation: trace-hint-pulse 1.1s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
   @keyframes pop-in {
     0% {
       opacity: 0;

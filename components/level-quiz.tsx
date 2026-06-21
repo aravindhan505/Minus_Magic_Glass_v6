@@ -101,11 +101,12 @@ export function LevelQuiz({
     else onQuizFailRef.current?.()
   }, [allDone, passed])
 
-  const handleVisualChoice = (optionIndex: number) => {
+  const handleChoice = (optionIndex: number) => {
     if (feedback) return
+    if (question.type !== "visual_choice" && question.type !== "text_choice") return
 
     setSelectedOption(optionIndex)
-    const isCorrect = question.type === "visual_choice" && question.options[optionIndex].correct
+    const isCorrect = question.options[optionIndex].correct
 
     if (isCorrect) {
       setFeedback("correct")
@@ -289,7 +290,7 @@ export function LevelQuiz({
             <button
               key={i}
               type="button"
-              onClick={() => handleVisualChoice(i)}
+              onClick={() => handleChoice(i)}
               disabled={!!feedback}
               aria-label={hideOptionLabels ? `Picture choice ${i + 1}` : option.label}
               className={cn(
@@ -307,20 +308,38 @@ export function LevelQuiz({
                 <div
                   className={cn(
                     "relative size-full",
+                    option.imageSrcRight ? "grid grid-cols-2 gap-1" : "",
                     option.transform ? TILE_TRANSFORM_CLASS[option.transform] : "",
                   )}
                 >
-                  <Image
-                    src={option.imageSrc}
-                    alt=""
-                    fill
-                    className={cn("object-contain", hideOptionLabels ? "p-1 sm:p-1.5" : "p-2")}
-                    sizes="200px"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.style.display = "none"
-                    }}
-                  />
+                  <div className="relative min-h-0 min-w-0">
+                    <Image
+                      src={option.imageSrc}
+                      alt=""
+                      fill
+                      className={cn("object-contain", hideOptionLabels ? "p-1 sm:p-1.5" : "p-2")}
+                      sizes="200px"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.style.display = "none"
+                      }}
+                    />
+                  </div>
+                  {option.imageSrcRight && (
+                    <div className="relative min-h-0 min-w-0">
+                      <Image
+                        src={option.imageSrcRight}
+                        alt=""
+                        fill
+                        className={cn("object-contain", hideOptionLabels ? "p-1 sm:p-1.5" : "p-2")}
+                        sizes="200px"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.style.display = "none"
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               {!hideOptionLabels && (
@@ -328,6 +347,41 @@ export function LevelQuiz({
                   {option.label}
                 </span>
               )}
+              {selectedOption === i && feedback === "correct" && (
+                <div className="absolute -right-2 -top-2 rounded-full bg-accent p-1">
+                  <Check className="size-4 text-accent-foreground" />
+                </div>
+              )}
+              {selectedOption === i && feedback === "incorrect" && (
+                <div className="absolute -right-2 -top-2 rounded-full bg-destructive p-1">
+                  <X className="size-4 text-white" />
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Text-only multiple choice (Level 3) */}
+      {question.type === "text_choice" && (
+        <div className={cn("flex flex-col", compact ? "gap-2" : "gap-3")}>
+          {question.options.map((option, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleChoice(i)}
+              disabled={!!feedback}
+              className={cn(
+                "group relative rounded-2xl border-2 px-4 py-3 text-left font-heading text-sm font-bold transition-all sm:text-base",
+                selectedOption === i && feedback === "correct"
+                  ? "border-accent bg-accent/20 text-accent"
+                  : selectedOption === i && feedback === "incorrect"
+                    ? "border-destructive bg-destructive/20"
+                    : "border-border hover:border-primary bg-card",
+                feedback && "cursor-default",
+              )}
+            >
+              {option.label}
               {selectedOption === i && feedback === "correct" && (
                 <div className="absolute -right-2 -top-2 rounded-full bg-accent p-1">
                   <Check className="size-4 text-accent-foreground" />

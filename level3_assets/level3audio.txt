@@ -1,73 +1,337 @@
 # Level 3: Edge Detection — Narrator Audio Guide
-# ==============================================
+# =================================================
 # Project: Minu's Magic Glasses
 # Planet: Edge Detection (Level 3)
 #
-# FLOW
-# ────
+# PURPOSE
+# ───────
+# Complete list of NARRATOR voice lines for Level 3 only.
+# Generate each as an MP3, then drop into the folders below.
+#
+# LEVEL 3 FLOW (what the audio must match)
+# ─────────────────────────────────────────
 # 1. Level intro — plays on enter (level-screen.tsx → narrator_level3_intro.mp3)
-#    OR future bridge: narrator_level3_intro.mp3 in public/audio/level_3/
-# 2. Activity — 3 picture-tracing rounds (butterfly → house → rocket)
-# 3. Quiz — 3 text MCQs · pass 2/3 (67%)
+# 2. Edge Tracing Activity — 3 random mystery shapes from pool of 6
+#    (butterfly, house, rocket, teddy bear, soccer ball, car)
+#    Silhouette only at first → trace 100% of edge dots → color picture revealed
+# 3. Final Quiz — 3 random text questions from pool of 6 · pass 2/3 (67%)
+#    Shared LevelQuiz UI (same format as Levels 2, 4, and 5)
 #
-# WHERE TO PUT FILES (preferred level pack)
-# ───────────────────────────────────────
+# UI TEXT THE AUDIO SHOULD ALIGN WITH
+# ───────────────────────────────────
+# Activity header: "Level 3 · Edge Detection" / "Round N – Mystery Shape"
+# Mission: "Map the Edges"
+# Start status: "A mystery shape! Trace every dot along the edges to reveal the picture!"
+# Canvas hint: "Trace the dotted edges on the mystery silhouette!"
+# Progress: "Edges traced: N%" · "Trace 100% to reveal the picture!"
+# Reveal banner: "Color revealed!" · "You found every edge — here's the real picture!"
+# Hint (glow): "Look for the N glowing dot(s) you missed!" + per-shape text hint on screen
+# Next button: "Next Mystery Shape →" or "Go to Quiz!"
+# Quiz header: "Quiz · Edge Detection" / "3 Random Questions!"
+# Quiz pass message (on screen): "Sharp tracing! You really understand edges and outlines!"
+#
+# SHAPE POOL (6 total — app picks 3 per run; generate ALL clips so any combo works)
+# ─────────────────────────────────────────────────────────────────────────────────
+# butterfly · house · rocket · teddybear · soccerball · car
+#
+# QUIZ POOL (6 total — app picks 3 per run; generate ALL clips so any combo works)
+# ─────────────────────────────────────────────────────────────────────────────────
+# what-traced · draw-ball-first · edge-word · house-edge · dot-placement · butterfly-outline
+#
+# VOICE DIRECTION
+# ───────────────
+# NARRATOR: Warm, friendly adult (PBS / Blue's Clues host)
+#   - Clear, slightly slow pace for ages 5–8
+#   - Encouraging, patient, never condescending
+#   - Use "edges," "outlines," and "mystery shape" language — detective / coloring-book vibe
+#
+# GENERATION SETTINGS
+# ───────────────────
+# Format: MP3, 44.1 kHz
+# Normalize peak: -3 dB
+# Keep volume consistent across all Level 3 files
+# Speed: Slightly slower than normal conversation
+#
+# WHERE TO PUT FILES
+# ──────────────────
 # public/audio/level_3/
+# public/audio/level_3/reveal/   ← per-shape color-reveal lines (optional subfolder)
 #
-# Fallback until pack exists: public/audio/minu/narrator_level3_*.mp3
+# Level intro (until module wiring matches Level 2/5):
+#   Also place narrator_level3_intro.mp3 in public/audio/minu/
+#   (level-screen.tsx plays it on enter today)
 #
-# VOICE: Warm PBS-style adult narrator, ages 5–8, clear and encouraging
-# Format: MP3 44.1 kHz, peak -3 dB
+# Shared quiz correct/incorrect clips stay in public/audio/minu/
 #
+# FILE NAMING: narrator_level3_<topic>.mp3
+# Use the exact filename shown before each block.
+#
+# ALREADY EXISTS (shared — do NOT re-generate unless updating)
+# ─────────────────────────────────────────────────────────────
+# narrator_quiz_correct.mp3
+# narrator_quiz_correct_amazing.mp3
+# narrator_quiz_incorrect.mp3
+# narrator_quiz_incorrect_try.mp3
+# narrator_level_complete.mp3
+#
+# CODE-GENERATED SFX (no MP3 needed)
+# ──────────────────────────────────
+# playTraceDot() — soft bloop when a tracing dot lights up (lib/audio.ts)
+# playFanfare() — round complete celebration (Web Audio API)
+# playClick() — button taps
+#
+# SUPERSEDES (old minu-dialogues.txt lines — do NOT use these texts)
+# ───────────────────────────────────────────────────────────────────
+# narrator_level3_instruction.mp3  — was sensitivity-slider UI (removed)
+# narrator_level3_quiz.mp3           — was visual MCQ (now text_choice via LevelQuiz)
+# narrator_level3_quiz_hands_on.mp3  — was slider quiz (not used)
+# Old round clips that named shapes BEFORE tracing — replaced by mystery-round flow
+#
+# WIRING TARGET (for dev after MP3s are placed)
+# ──────────────────────────────────────────────
+# lib/level3-audio.ts → playLevel3Narrator() / playLevel3Then()
+# components/level-3-edge-detection.tsx — activity + quiz narrator hooks
+# LEVEL3_REVEAL_AUDIO map keyed by round.id (butterfly, house, rocket, …)
+# LEVEL3_QUIZ_QUESTION_AUDIO map keyed by quiz question id
+#
+# TOTAL NARRATOR FILES TO GENERATE: 25
+# =================================================
+
+
 # ============================================================
-# FILES TO GENERATE
+# SECTION A — Level Entry (plays when entering Level 3)
+# ============================================================
+
+narrator_level3_intro.mp3
+  Trigger: Level screen mount (level-screen.tsx → public/audio/minu/)
+  Text: "Welcome to Edge Detection! Pictures can hide their colors — but the outside edge is still there. Slide your finger along the glowing dots to trace every outline. When you finish, the real picture appears! Help Minu map the edges like a detective!"
+  Emotion: Mysterious, exciting, detective-like
+  Notes: REPLACES old intro in minu-dialogues.txt (sensitivity slider concept removed)
+
+
+# ============================================================
+# SECTION B — Edge Tracing Activity (3 mystery rounds)
+# ============================================================
+
+narrator_level3_activity_intro.mp3
+  Trigger: First mystery shape only (round 1) — once when activity phase loads
+  Text: "Each round starts as a mystery shape — you only see the dark silhouette and the edge dots. Trace every dot along the outside edge with your finger or mouse. Fill the progress bar to one hundred percent, and the colorful picture will be revealed!"
+  Emotion: Clear, guiding, enthusiastic
+  Notes: Do NOT chain round_start after this clip
+
+narrator_level3_round_start.mp3
+  Trigger: Mystery shapes 2 and 3 — plays after next_mystery when kid taps Continue
+  Text: "New mystery shape! Follow the dots all the way around the outside edge. Do not stop until every dot is lit — then watch the color picture appear!"
+  Emotion: Fresh energy, encouraging
+  Notes: Do NOT name the shape here — kid sees "?" until reveal
+
+narrator_level3_reminder.mp3
+  Trigger: Idle 30+ seconds while dot-mapping screen is visible (silhouette + trace dots, not reveal/quiz)
+  Text: "Slide along the dots like you're drawing the outline with a crayon. Connect every dot around the outside edge. Watch the progress bar fill up!"
+  Emotion: Patient, gentle nudge
+
+# --- Hint button (glow missed dots + on-screen shape tip) ---
+
+narrator_level3_hint_glow.mp3
+  Trigger: Hint button tapped
+  Text: "Hint time! Look for the glowing yellow dots — those are the edge dots you missed! Trace over them to light them up. I'll also show you a tracing tip on screen."
+  Emotion: Helpful, pointing something out
+
+narrator_level3_hint_almost_done.mp3
+  Trigger: Optional — progress 80%+ but round not finished
+  Text: "You are so close! Just a few dots left on the outline. Check for any dots that are still grey, or tap Hint to see them glow!"
+  Emotion: Encouraging, almost-there energy
+
+# --- Round complete & color reveal ---
+# Only the shape-specific reveal plays at 100% trace (no trace_complete prefix).
+
+# Per-shape reveal lines — generate ALL 6 (app picks 3 random shapes per run).
+# Wired in: public/audio/level_3/ (flat folder)
+
+narrator_level3_trace_complete.mp3
+  Trigger: OPTIONAL / UNUSED in app — kept if you want a spare generic celebrate clip
+  Text: "You found every edge! Amazing tracing — you mapped the whole outline!"
+  Emotion: Celebratory, quick
+  Notes: App plays reveal_{shape} only — do not chain this before reveal
+
+narrator_level3_reveal_butterfly.mp3
+  Trigger: Color reveal — butterfly round (label on screen: Butterfly)
+  Text: "Beautiful! You traced every edge — it's a butterfly! Look at those wings!"
+  Emotion: Wonder, delight
+
+narrator_level3_reveal_house.mp3
+  Trigger: Color reveal — house round
+  Text: "Great job! You mapped every edge — it's a house! See the roof and walls!"
+  Emotion: Cheerful, proud
+
+narrator_level3_reveal_rocket.mp3
+  Trigger: Color reveal — rocket round
+  Text: "Blast off! You mapped every edge — it's a rocket! From the nose cone to the fins!"
+  Emotion: Excited, space-themed fun
+
+narrator_level3_reveal_teddybear.mp3
+  Trigger: Color reveal — teddy bear round
+  Text: "Aww! You mapped every edge — it's a teddy bear! Round ears and a cuddly shape!"
+  Emotion: Warm, joyful
+
+narrator_level3_reveal_soccerball.mp3
+  Trigger: Color reveal — soccer ball round
+  Text: "Goal! You mapped every edge — it's a soccer ball! You traced the whole circle outline!"
+  Emotion: Playful, sporty
+
+narrator_level3_reveal_car.mp3
+  Trigger: Color reveal — car round
+  Text: "Vroom! You mapped every edge — it's a car! You followed the outline all the way around!"
+  Emotion: Energetic, fun
+
+narrator_level3_next_mystery.mp3
+  Trigger: Kid taps "Next Mystery Shape →" (not final round) — then round_start for next shape
+  Text: "Ready for another mystery? Let's map the edges on a new shape!"
+  Emotion: Upbeat, forward momentum
+  Notes: Chained: next_mystery → UI advances → round_start. Skip on final round.
+
+narrator_level3_all_rounds_done.mp3
+  Trigger: Kid taps "Go to Quiz!" after final shape reveal → quiz bridge
+  Text: "Incredible edge detective work! You revealed three mystery pictures by tracing their outlines. One last challenge — the Edge Detection Quiz!"
+  Emotion: Proud, building anticipation
+
+
+# ============================================================
+# SECTION C — Final Quiz (3 random text questions · pass 2/3)
+# ============================================================
+
+narrator_level3_quiz_intro.mp3
+  Trigger: Quiz phase starts
+  Text: "Edge Detection Quiz! I'll ask you three questions about edges and outlines. Get two out of three right to pass and calibrate Minu's edge lens!"
+  Emotion: Confident, encouraging
+  Notes: REPLACES narrator_level3_quiz.mp3 from minu-dialogues.txt
+
+narrator_level3_quiz_question.mp3
+  Trigger: Each new quiz question (optional — play when question appears)
+  Text: "Read the question and tap the best answer!"
+  Emotion: Neutral, supportive
+
+# --- One clip per quiz pool question (LEVEL3_QUIZ_POOL in level3-edge-detection.ts) ---
+# App picks 3 random per session — generate ALL 6 so any combo works.
+
+narrator_level3_quiz_what_traced.mp3
+  Trigger: Quiz question id: what-traced
+  Text: "Think about what we traced on each mystery shape. Was it the colors, the background, or the outside edge?"
+  Emotion: Reflective, teaching
+
+narrator_level3_quiz_draw_ball.mp3
+  Trigger: Quiz question id: draw-ball-first
+  Text: "When you draw a ball, what do you usually draw first — the outside edge, the shadow, or the middle?"
+  Emotion: Friendly, drawing-class vibe
+
+narrator_level3_quiz_edge_word.mp3
+  Trigger: Quiz question id: edge-word
+  Text: "What is another word for the edge of a shape? Is it the inside, the outline, or the center?"
+  Emotion: Vocabulary-building, clear
+
+narrator_level3_quiz_house_edge.mp3
+  Trigger: Quiz question id: house-edge
+  Text: "When we trace the edge of a house, what are we really drawing — the shape, the people inside, or the roof color?"
+  Emotion: Thoughtful, connecting to activity
+
+narrator_level3_quiz_dot_placement.mp3
+  Trigger: Quiz question id: dot-placement
+  Text: "Where do the tracing dots go in our game — in the middle, all over the place, or around the outside edge?"
+  Emotion: Playful recall
+
+narrator_level3_quiz_butterfly_outline.mp3
+  Trigger: Quiz question id: butterfly-outline
+  Text: "If you only see the outline of a butterfly, can you still guess what it is? Think about shape versus color!"
+  Emotion: Detective thinking, encouraging
+
+# Quiz correct/incorrect: use existing shared files (header above).
+# Do NOT create duplicates:
+#   narrator_quiz_correct.mp3 / narrator_quiz_correct_amazing.mp3
+#   narrator_quiz_incorrect.mp3 / narrator_quiz_incorrect_try.mp3
+
+narrator_level3_quiz_pass.mp3
+  Trigger: Quiz passed (2/3 or better)
+  Text: "You passed! You really understand edges and outlines. Minu's edge lens is calibrated!"
+  Emotion: Peak pride, celebration
+
+narrator_level3_quiz_fail.mp3
+  Trigger: Quiz failed (below 2/3) — before retry
+  Text: "Good try! Remember — edges are the outside outlines of shapes. Trace the idea in your head and give the quiz another go!"
+  Emotion: Encouraging, no disappointment
+
+
+# ============================================================
+# SECTION D — Optional Minu Reactions (Level 3 only)
+# Generate these if you want Minu voice lines too (not narrator).
+# Place in same folder: public/audio/minu/
+# ============================================================
+
+minu_level3_mystery_shape.mp3
+  Voice: Minu
+  Trigger: Activity starts or first mystery round
+  Text: "Ooh — a mystery shape! I can only see the outline… if I trace every dot, will the real picture pop out?"
+  Emotion: Curious, intrigued
+
+minu_level3_tracing.mp3
+  Voice: Minu
+  Trigger: First dot lit in a round
+  Text: "The dots are lighting up! So the edge is like a path around the shape — I'm drawing the outline!"
+  Emotion: Delighted discovery
+
+minu_level3_reveal_gasp.mp3
+  Voice: Minu
+  Trigger: Color reveal screen
+  Text: "Whoa! It was hiding in the silhouette the whole time! Now I can see the real picture!"
+  Emotion: Amazed, joyful
+
+minu_level3_quiz_ready.mp3
+  Voice: Minu
+  Trigger: Quiz starts
+  Text: "A quiz about edges? You traced three whole shapes — you've got this!"
+  Emotion: Nervous but hopeful
+
+
+# ============================================================
+# QUICK CHECKLIST — 25 narrator files to generate
 # ============================================================
 #
-# narrator_level3_intro.mp3
-#   Trigger: Level 3 opens
-#   Text: "Edge Detection Planet! Pictures hide secret outlines. Trace the
-#   dots with your finger — like a magic coloring book — to find every edge!"
-#
-# narrator_level3_round_butterfly.mp3
-#   Trigger: Round 1 starts
-#   Text: "First picture: a butterfly! Slide your finger along the dots to
-#   trace its wings and body."
-#
-# narrator_level3_round_house.mp3
-#   Trigger: Round 2 starts
-#   Text: "Next up: a house! Trace the roof and walls — follow every dot!"
-#
-# narrator_level3_round_rocket.mp3
-#   Trigger: Round 3 starts
-#   Text: "Last picture: a rocket! Trace from the nose cone down to the fins!"
-#
-# narrator_level3_trace_complete.mp3
-#   Trigger: Each round fully traced
-#   Text: "You found all the edges! Amazing tracing!"
-#
-# narrator_level3_quiz_intro.mp3
-#   Trigger: Quiz phase starts
-#   Text: "Edge Detective Quiz! Answer three quick questions. Get two right to pass!"
-#
-# narrator_level3_quiz_pass.mp3
-#   Trigger: Quiz passed (2/3+)
-#   Text: "Super detective work! Minu's edge lens is calibrated!"
-#
-# narrator_level3_quiz_fail.mp3
-#   Trigger: Quiz failed
-#   Text: "Good try! Trace and think once more, then retry the quiz."
-#
-# Quiz correct/incorrect: use shared files in public/audio/minu/
-#   narrator_quiz_correct.mp3, narrator_quiz_incorrect.mp3, etc.
-#
-# ============================================================
-# CHECKLIST — 8 Level 3 narrator files
-# ============================================================
+# SECTION A — Entry (1)
 # [ ] narrator_level3_intro.mp3
-# [ ] narrator_level3_round_butterfly.mp3
-# [ ] narrator_level3_round_house.mp3
-# [ ] narrator_level3_round_rocket.mp3
+#
+# SECTION B — Activity (14)
+# [ ] narrator_level3_activity_intro.mp3
+# [ ] narrator_level3_round_start.mp3
+# [ ] narrator_level3_reminder.mp3
+# [ ] narrator_level3_hint_glow.mp3
+# [ ] narrator_level3_hint_almost_done.mp3
 # [ ] narrator_level3_trace_complete.mp3
+# [ ] narrator_level3_reveal_butterfly.mp3      (in reveal/)
+# [ ] narrator_level3_reveal_house.mp3            (in reveal/)
+# [ ] narrator_level3_reveal_rocket.mp3           (in reveal/)
+# [ ] narrator_level3_reveal_teddybear.mp3        (in reveal/)
+# [ ] narrator_level3_reveal_soccerball.mp3       (in reveal/)
+# [ ] narrator_level3_reveal_car.mp3              (in reveal/)
+# [ ] narrator_level3_next_mystery.mp3
+# [ ] narrator_level3_all_rounds_done.mp3
+#
+# SECTION C — Quiz (10)
 # [ ] narrator_level3_quiz_intro.mp3
+# [ ] narrator_level3_quiz_question.mp3
+# [ ] narrator_level3_quiz_what_traced.mp3
+# [ ] narrator_level3_quiz_draw_ball.mp3
+# [ ] narrator_level3_quiz_edge_word.mp3
+# [ ] narrator_level3_quiz_house_edge.mp3
+# [ ] narrator_level3_quiz_dot_placement.mp3
+# [ ] narrator_level3_quiz_butterfly_outline.mp3
 # [ ] narrator_level3_quiz_pass.mp3
 # [ ] narrator_level3_quiz_fail.mp3
+#
+# Optional Minu (4 files):
+# [ ] minu_level3_mystery_shape.mp3
+# [ ] minu_level3_tracing.mp3
+# [ ] minu_level3_reveal_gasp.mp3
+# [ ] minu_level3_quiz_ready.mp3
+#
+# After placing files, tell the dev:
+# "I've placed the Level 3 narrator MP3s in public/audio/level_3/"
+# ============================================================

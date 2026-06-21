@@ -1,7 +1,7 @@
 # Minu's Magic Glasses — Project Status & Session Tracker
 
 **Last Updated:** June 20, 2026
-**Last Session:** Pushed to GitHub `aravindhan505/Minus_Magic_Glass_v5` — Level 2 audio (19 MP3s), reveal spec, Vercel LFS fix
+**Last Session:** Level 3 narrator audio (25 MP3s) wired — bridge screens, tracing triggers, reveal + quiz (`lib/level3-audio.ts`)
 
 ---
 
@@ -69,8 +69,9 @@ This is the **single source of truth** for project status. If a session terminat
 | Quiz correct/incorrect narrator | ✅ Done | `level-quiz.tsx` — alternates between 2 clips randomly |
 | Level complete narrator | ✅ Done | `page.tsx` — waits for MP3 `onEnd` before returning to map (15s fallback) |
 | All levels complete narrator | ✅ Done | `page.tsx` — plays when all 5 levels done |
-| Narrator audio files wired (61/58) | ✅ Done | 11 shared `audio/minu/` + 31 L5 + 19 L2 |
+| Narrator audio files wired (86) | ✅ Done | 11 shared `audio/minu/` + 31 L5 + 19 L2 + 25 L3 |
 | Level 2 narrator triggers | ✅ Done | `playLevel2Narrator()` — bridges, rounds, hints, reveal, quiz |
+| Level 3 narrator triggers | ✅ Done | `playLevel3Narrator()` — bridges, rounds, hints, reveal, quiz |
 | Level 5 narrator triggers | ✅ Done | `playLevel5Narrator()` — intro chain, rounds, hints, hierarchy, quiz |
 | Planet name narrator (5 clips) | ✅ Done | `public/audio/planets/*.mp3` — plays on Planet Map navigation |
 | Level complete timeout fix | ✅ Done | Replaced fixed timeout with `playNarratorFile({ onEnd })` so audio never cuts off |
@@ -142,6 +143,84 @@ This is the **single source of truth** for project status. If a session terminat
 - `components/level-2-color-lens.tsx` — circular lens UI with slosh animation
 - `components/level-2-brightness-in-color.tsx` — full level orchestrator + L2 audio
 - `components/level-screen.tsx` — routes `level.id === 2` to Level 2 module (intro handled in module)
+
+### Level 3: Edge Detection (Mystery Trace) ✅ COMPLETE (June 20)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Silhouette-first mystery shapes | ✅ Done | 3 random/6 — butterfly, house, rocket, teddy bear, soccer ball, car |
+| Auto-extracted trace dots | ✅ Done | `lib/level3-trace-dots.ts` — green outline → dot positions |
+| 100% trace → color reveal | ✅ Done | Hint glows missed dots; trace-dot SFX |
+| Final text quiz (3 random/6) | ✅ Done | Shared `LevelQuiz` — pass 2/3 (67%) |
+| Trace picture assets (12 PNGs) | ✅ Done | `public/images/level3/` — 6 color + 6 silhouette pairs |
+| **Level 3 narrator audio (25 MP3s)** | ✅ Done | `public/audio/level_3/` — all clips from `level3_assets/level3audio.txt` |
+| Level 3 audio triggers wired | ✅ Done | `lib/level3-audio.ts` + `playLevel3Then()` chains |
+| Level 3 bridge screens | ✅ Done | Intro + Quiz Time bridges via `Level5PartBridge` + `playLevel3Then` |
+| Level 3 audio timing (no cutoffs) | ✅ Done | All-rounds-done waits for narrator before quiz bridge |
+
+**Level 3 flow:** Intro bridge → round 1 (`activity_intro` only) → shape reveal → `next_mystery` → `round_start` (rounds 2–3) → last reveal → `all_rounds_done` → Quiz bridge → text quiz (2/3 pass)
+
+**Level 3 audio map (`public/audio/level_3/`):**
+| Trigger | File |
+|---------|------|
+| Intro bridge screen | `narrator_level3_intro.mp3` → activity |
+| Round 1 start only | `activity_intro.mp3` |
+| Rounds 2–3 start | `next_mystery.mp3` → `round_start.mp3` (on Continue) |
+| Idle 30s on dot-mapping screen only | `reminder.mp3` |
+| Hint button (glow missed dots) | `hint_glow.mp3` |
+| Progress ≥ 80% | `hint_almost_done.mp3` |
+| 100% traced + color reveal | `reveal_{shape}.mp3` only |
+| Continue (not last shape) | `next_mystery.mp3` → `round_start.mp3` |
+| Continue (last shape) | `all_rounds_done.mp3` → quiz bridge |
+| Quiz bridge screen | `quiz_intro.mp3` → quiz |
+| Per quiz question (6 pool) | `quiz_what_traced` / `draw_ball` / `edge_word` / `house_edge` / `dot_placement` / `butterfly_outline` |
+| Quiz pass / fail | `quiz_pass.mp3` / `quiz_fail.mp3` |
+| Per-answer correct/incorrect | shared `public/audio/minu/narrator_quiz_*.mp3` |
+
+**Files:**
+- `lib/level3-edge-detection.ts` — 6 trace rounds, quiz pool, random pickers
+- `lib/level3-trace-dots.ts` — silhouette dot extraction
+- `lib/level3-audio.ts` — Level 3 narrator path + reveal/quiz maps + `playLevel3RevealForRound()`
+- `components/level-3-edge-detection.tsx` — full level orchestrator + L3 audio
+- `components/level-screen.tsx` — routes `level.id === 3` (intro handled in module)
+
+### Level 4: Feature Recognition — Common Features + Visual Quiz ✅ DONE (June 21)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Two singles side by side (8-pair pool) | ✅ Done | `public/images/level4/singles/` — left/right PNGs |
+| Multi-select Shape / Color / Texture + Check | ✅ Done | Must match every shared feature exactly |
+| **5 random rounds** from pool of **8** | ✅ Done | `getRandomLevel4Rounds(5)` |
+| Visual quiz **3 random/6** · pass **2/3** | ✅ Done | Options shuffled per attempt |
+| **Level 4 narrator audio (27 MP3s)** | ✅ Done | `public/audio/level_4/` — all clips from `level4_assets/level4audio.txt` |
+| Level 4 audio triggers wired | ✅ Done | `lib/level4-audio.ts` + `playLevel4Then()` chains |
+| Level 4 bridge screens | ✅ Done | Intro + Quiz Time bridges via `Level5PartBridge` + `playLevel4Then` |
+| Level 4 audio timing (no cutoffs) | ✅ Done | Pair explain → advance; `all_rounds_done` waits before quiz bridge |
+| Optional Minu L4 reactions (4) | ⏭ Skipped | Not generated — no wiring needed |
+
+**Level 4 flow:** Intro bridge → round 1 (`activity_intro` only) → correct (`pair_{id}.mp3`) → `round_start` (rounds 2–5) → last correct → `all_rounds_done` → Quiz bridge → visual quiz (2/3 pass)
+
+**Level 4 audio map (`public/audio/level_4/`):**
+| Trigger | File |
+|---------|------|
+| Intro bridge screen | `narrator_level4_intro.mp3` → activity |
+| Round 1 start only | `activity_intro.mp3` |
+| Rounds 2–5 start | `round_start.mp3` (on auto-advance after correct) |
+| Idle 30s during activity | `reminder.mp3` |
+| Check with no selection | `wrong_empty.mp3` |
+| Wrong — missed shared feature | `wrong_missing.mp3` |
+| Wrong — picked non-matching feature | `wrong_extra.mp3` |
+| Wrong — both errors | `wrong_mixed.mp3` |
+| Correct check | `pair_{round_id}.mp3` (8 pool clips) |
+| Last round correct | `all_rounds_done.mp3` → quiz bridge |
+| Quiz bridge screen | `quiz_intro.mp3` → quiz |
+| Per quiz question (6 pool) | `quiz_shape_same_color_diff` / `color_same_shape_diff` / `texture_same_shape_diff` / `all_three_match` / `shape_color_same_texture_diff` / `shape_texture_same_color_diff` |
+| Quiz pass / fail | `quiz_pass.mp3` / `quiz_fail.mp3` |
+| Per-answer correct/incorrect | shared `public/audio/minu/narrator_quiz_*.mp3` |
+
+**Files:**
+- `lib/level4-feature-recognition.ts` — 8 pair pool, quiz pool, random pickers
+- `lib/level4-audio.ts` — Level 4 narrator path + pair/quiz maps + `playLevel4ExplainForRound()`
+- `components/level-4-feature-recognition.tsx` — full level orchestrator + L4 audio
+- `components/level-screen.tsx` — routes `level.id === 4` (intro handled in module)
 
 ### Level 5: Object Detection — Two Parts + CV Quiz 🟡 IN PROGRESS (June 18)
 | Feature | Status | Notes |
@@ -221,7 +300,7 @@ Each teammate builds ONE level module independently.
 | Level 1: Numbers to Brightness | _[TBD]_ | 🔵 Ready to start | `level-1-numbers-to-brightness.tsx` |
 | Level 2: Brightness in Color | Buffy | ✅ Done | `level-2-brightness-in-color.tsx` — Color Potion RGB mixing |
 | Level 3: Edge Detection | Buffy | ✅ Done | Silhouette-first tracing · 3 random/6 · 100% reveals color · edge quiz 2/3 |
-| Level 4: Feature Recognition | Buffy | ✅ Done | `level-4-feature-recognition.tsx` — shape/color/texture rounds + visual quiz 2/3 |
+| Level 4: Feature Recognition | Buffy | ✅ Done | Common features activity · 8-pair singles · 5 random/run · visual quiz 2/3 · full narrator audio wired |
 | Level 5: Object Detection | ✅ Done | Part 1 + Part 2 + CV quiz + full narrator audio wired |
 
 **⚠️ IMPORTANT:** Each module builder MUST read:
@@ -237,8 +316,8 @@ Each teammate builds ONE level module independently.
 | Build `celebration-screen.tsx` (final screen) | ❌ Pending | Buffy | After all 5 levels complete |
 | Build `level-complete-overlay.tsx` | ❌ Pending | Buffy | Per-level completion |
 | Add localStorage persistence | ❌ Pending | Buffy | Save progress across sessions |
-| Replace Web Speech API TTS with MP3 audio | 🟡 Partial | Buffy | 42/58 narrator files wired. Remaining: L1–L4 intros + L2 audio (20 files) + Minu reactions (30) |
-| Wire narrator + Minu audio to triggers | 🟡 Partial | Buffy | Global + Level 5 narrator wired. L2 audio pending files. Minu reactions pending |
+| Replace Web Speech API TTS with MP3 audio | 🟡 Partial | Buffy | 113 narrator files wired (L2/L3/L4/L5 packs). Remaining: L1 intro + Minu reactions (30) |
+| Wire narrator + Minu audio to triggers | 🟡 Partial | Buffy | Global + L2/L3/L4/L5 narrator wired. Minu reactions pending |
 | Update LevelConfig type for new audio fields | ❌ Pending | Buffy | Match spec v2.2 (narratorIntro, minuIntro, etc.) |
 
 ### Phase 5: Polish & QA — ⏳ WAITING ON PHASE 4
@@ -255,8 +334,8 @@ Each teammate builds ONE level module independently.
 ## 3. What We're Waiting For
 
 ### 🎵 Audio MP3 Files (58 files in minu-dialogues + level-specific packs)
-**Waiting on:** User (you) — Level 1/3/4 narrator packs + 30 Minu reaction files
-**Status:** 🟡 Level 2 complete (19/19). Level 5 complete (31/31). 11 shared wired. 16 global + 30 Minu remaining.
+**Waiting on:** User (you) — Level 1/4 narrator packs + 30 Minu reaction files
+**Status:** 🟡 L2 (19/19), L3 (25/25), L5 (31/31) wired. 11 shared wired. L1/L4 intros + 30 Minu remaining.
 
 **Shared files (`public/audio/minu/`) — 11 wired:**
 ```
@@ -286,11 +365,17 @@ public/audio/minu/
 - Helper: `lib/level2-audio.ts` → `playLevel2Narrator()` / `playLevel2Then()`
 - Optional 4 Minu L2 reactions: not generated (skipped)
 
-**Level 3 files (`public/audio/level_3/`) — 0/8, spec ready:**
-- `level3_assets/level3audio.txt`
+**Level 3 files (`public/audio/level_3/`) — 25/25 received and wired ✅**
+- Spec: `level3_assets/level3audio.txt`
+- User path: `G:\Cursor\FreeBuff\minu-s-magic-glasses\public\audio\level_3\`
+- Helper: `lib/level3-audio.ts` → `playLevel3Narrator()` / `playLevel3Then()` / `playLevel3RevealForRound()`
+- Optional 4 Minu L3 reactions: not generated (skipped)
 
-**Level 4 files (`public/audio/level_4/`) — 0/9, spec ready:**
-- `level4_assets/level4audio.txt`
+**Level 4 files (`public/audio/level_4/`) — 27/27 received and wired ✅**
+- Spec: `level4_assets/level4audio.txt`
+- User path: `G:\Cursor\FreeBuff\minu-s-magic-glasses\public\audio\level_4\`
+- Helper: `lib/level4-audio.ts` → `playLevel4Narrator()` / `playLevel4Then()` / `playLevel4ExplainForRound()`
+- Optional 4 Minu L4 reactions: not generated (skipped)
 
 **Files still needed (Level 1 narrator + 30 Minu):**
 - Level 1 intro/instruction/quiz narrator files (see `minu-dialogues.txt`)
@@ -362,18 +447,23 @@ public/images/level3/
 └── trace-car-color.png / trace-car-silhouette.png
 ```
 
-### 🖼️ Level 4 Comparison Images (5 files)
-**Waiting on:** User (you) — core set done from friend's reference
-**Status:** ✅ DONE — `public/images/level4/` (5 pairs, kebab-case names)
-**Reference file:** `level4_assets/level4images.txt` (optional pure S/C/T pairs listed)
+### 🖼️ Level 4 Comparison Images (8 pairs · 16 singles)
+**Waiting on:** User (you)
+**Status:** ✅ DONE — `public/images/level4/singles/` (pair-*-left.png + pair-*-right.png)
+**Reference file:** `level4_assets/level4images.txt` (8 pairs, matching matrix, prompts)
+
+**Activity:** Kid taps ALL shared features (Shape / Color / Texture) per pair · 5 random from pool of 8.
 
 ```
-public/images/level4/
-├── apple-vs-tomato.png
-├── orange-vs-tennis-ball.png
-├── coconut-vs-basketball.png
-├── dolphin.png
-└── football-vs-golf.png
+public/images/level4/singles/
+├── pair-star-circle-yellow-left.png / -right.png
+├── pair-red-blue-balls-left.png / -right.png
+├── pair-wood-metal-cubes-left.png / -right.png
+├── pair-red-green-apples-left.png / -right.png
+├── pair-orange-tennis-ball-left.png / -right.png
+├── pair-dolphin-real-plush-left.png / -right.png
+├── pair-rough-smooth-rocks-left.png / -right.png
+└── pair-twin-strawberries-left.png / -right.png
 ```
 
 ### 🖼️ Other Level Images (Level 1 + legacy spec)

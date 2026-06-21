@@ -1,63 +1,204 @@
-# Level 4: Feature Recognition — Comparison Image Assets
+# Level 4: Feature Recognition — Comparison Pair Assets
 # ======================================================
 # Project: Minu's Magic Glasses
 # Planet: Feature Recognition (Level 4)
 #
-# CURRENT STATUS
-# ──────────────
-# 5 comparison pairs from friend's reference are wired (renamed, no spaces):
-#   public/images/level4/apple-vs-tomato.png
-#   public/images/level4/orange-vs-tennis-ball.png
-#   public/images/level4/coconut-vs-basketball.png
-#   public/images/level4/dolphin.png
-#   public/images/level4/football-vs-golf.png
+# ACTIVITY (June 2026 redesign)
+# ─────────────────────────────
+# Each round shows TWO separate figures side by side in the app.
+# Kid taps ALL features that BOTH figures share: Shape, Color, Texture.
+# Must select every matching feature (and no extras) to pass the round.
 #
-# ACTIVITY ANSWERS (verified in lib/level4-feature-recognition.ts)
-# ────────────────────────────────────────────────────────────────
-# Round 1 Apple vs Tomato        → SHAPE
-# Round 2 Orange vs Tennis Ball  → COLOR
-# Round 3 Coconut vs Basketball  → TEXTURE
-# Round 4 Dolphin (real vs plush)→ TEXTURE
-# Round 5 Football vs Golf       → TEXTURE
+# Pool: 8 pairs · App picks 5 random per session (see lib/level4-feature-recognition.ts)
 #
-# OPTIONAL FUTURE UPGRADES
-# ────────────────────────
-# Add 1–2 new pairs so each category (Shape / Color / Texture) has a
-# dedicated "pure" example without overlap. Suggested additions:
+# WHERE TO PUT FILES
+# ──────────────────
+# public/images/level4/singles/
 #
-# color-pair-red-blue-balls.png
-#   Prompt: "Side by side for kids app: identical smooth spheres, one bright
-#   red, one bright blue, same size, white background, bold cartoon style,
-#   no text"
-#   Use for: pure COLOR round (shape and texture match)
+# FILE NAMING: pair-<slug>-left.png / pair-<slug>-right.png (kebab-case)
 #
-# texture-pair-wood-metal.png
-#   Prompt: "Side by side: two identical cubes, one rough wood grain texture,
-#   one shiny metal, same brown-ish color, kid-friendly cartoon, white bg"
-#   Use for: pure TEXTURE round (shape and color similar)
+# ART RULES (all singles)
+# ───────────────────────
+# - Square ~512×512 per figure — one subject centered per file
+# - Black or transparent background (app adds drop shadow on dark theme)
+# - Bold kid-friendly 3D cartoon / clipart — clear outlines, readable colors
+# - NO text, labels, or watermarks in the image
+# - Left vs right should be obviously comparable (same camera angle when possible)
 #
-# shape-pair-star-circle.png
-#   Prompt: "Side by side: yellow star and yellow circle, same color and
-#   smooth texture, different outlines only, kid cartoon, white bg"
-#   Use for: pure SHAPE round
+# FEATURE DEFINITIONS (for prompts + answers)
+# ───────────────────────────────────────────
+# SHAPE   = same overall outline / silhouette (circle vs star = different shape)
+# COLOR   = same main color(s) — close enough that a kid would say "same color"
+# TEXTURE = same surface feel (both smooth, both fuzzy, both bumpy, etc.)
 #
-# ART RULES FOR ALL L4 PAIRS
-# ──────────────────────────
-# - Two subjects side by side, equal visual weight
-# - Transparent or white background (dark theme uses drop shadow)
-# - Kid-friendly, recognizable objects
-# - PNG ~800×400 or similar landscape aspect
+# MATCHING FEATURES KEY (what kid should select)
+# ──────────────────────────────────────────────
+# S = Shape matches · C = Color matches · T = Texture matches
 #
 # ============================================================
-# CHECKLIST (current set — already in repo)
+# PAIR 01 — Color + Texture match (shape differs)
 # ============================================================
-# [x] apple-vs-tomato.png
-# [x] orange-vs-tennis-ball.png
-# [x] coconut-vs-basketball.png
-# [x] dolphin.png
-# [x] football-vs-golf.png
 #
-# Optional additions:
-# [ ] color-pair-red-blue-balls.png
-# [ ] texture-pair-wood-metal.png
-# [ ] shape-pair-star-circle.png
+# Files: pair-star-circle-yellow-left.png · pair-star-circle-yellow-right.png
+# Label: Yellow Star vs Yellow Circle
+# Matching: Color, Texture  (NOT Shape)
+#
+# LEFT PROMPT:
+# "Children's educational app asset, single five-point yellow star centered on
+# black background, flat smooth matte finish, bright lemon-yellow, bold cartoon
+# 3D clipart with thick outlines, no text, square 1:1"
+#
+# RIGHT PROMPT:
+# "Children's educational app asset, single yellow circle centered on black
+# background, same size as star pair, same flat smooth matte finish, same bright
+# lemon-yellow color, bold cartoon 3D clipart, no text, square 1:1"
+#
+# ============================================================
+# PAIR 02 — Shape + Texture match (color differs)
+# ============================================================
+#
+# Files: pair-red-blue-balls-left.png · pair-red-blue-balls-right.png
+# Label: Red Ball vs Blue Ball
+# Matching: Shape, Texture  (NOT Color)
+#
+# LEFT PROMPT:
+# "Single smooth glossy red sphere centered on black background, kid-friendly 3D
+# cartoon, bright red, no text, square"
+#
+# RIGHT PROMPT:
+# "Single smooth glossy blue sphere centered on black background, same size and
+# shine as red ball pair, kid-friendly 3D cartoon, no text, square"
+#
+# ============================================================
+# PAIR 03 — Shape only (color + texture differ)
+# ============================================================
+#
+# Files: pair-wood-metal-cubes-left.png · pair-wood-metal-cubes-right.png
+# Label: Wooden Cube vs Metal Cube
+# Matching: Shape  (NOT Color, NOT Texture)
+#
+# LEFT PROMPT:
+# "Single rough brown wood-grain cube centered on black background, kid cartoon
+# 3D, matte wood texture, no text, square"
+#
+# RIGHT PROMPT:
+# "Single shiny silver metal cube centered on black background, same size and
+# angle as wood cube pair, reflective chrome surface, no text, square"
+#
+# ============================================================
+# PAIR 04 — Shape + Texture match (color differs)
+# ============================================================
+#
+# Files: pair-red-green-apples-left.png · pair-red-green-apples-right.png
+# Label: Red Apple vs Green Apple
+# Matching: Shape, Texture  (NOT Color)
+#
+# LEFT PROMPT:
+# "Single shiny red apple centered on black background, smooth glossy skin, small
+# stem and leaf, kid-friendly 3D, no text, square"
+#
+# RIGHT PROMPT:
+# "Single shiny green apple centered on black background, same outline and size
+# as red apple pair, smooth glossy skin, stem and leaf, no text, square"
+#
+# ============================================================
+# PAIR 05 — Shape only (color + texture differ)
+# ============================================================
+#
+# Files: pair-orange-tennis-ball-left.png · pair-orange-tennis-ball-right.png
+# Label: Orange vs Tennis Ball
+# Matching: Shape  (NOT Color, NOT Texture)
+#
+# LEFT PROMPT:
+# "Single round orange fruit centered on black background, bumpy citrus peel
+# texture, kid-friendly 3D, no text, square"
+#
+# RIGHT PROMPT:
+# "Single fuzzy yellow-green tennis ball centered on black background, white
+# curved seam lines, same ball size as orange pair, kid-friendly 3D, no text, square"
+#
+# ============================================================
+# PAIR 06 — Shape + Color match (texture differs)
+# ============================================================
+#
+# Files: pair-dolphin-real-plush-left.png · pair-dolphin-real-plush-right.png
+# Label: Real Dolphin vs Plush Dolphin
+# Matching: Shape, Color  (NOT Texture)
+#
+# LEFT PROMPT:
+# "Single realistic gray-blue dolphin centered on black background, smooth shiny
+# skin, kid app cartoon 3D, no text, square"
+#
+# RIGHT PROMPT:
+# "Single stuffed plush dolphin toy centered on black background, same pose and
+# size as real dolphin pair, soft fuzzy fabric, same gray-blue color, no text, square"
+#
+# ============================================================
+# PAIR 07 — Shape + Color match (texture differs)
+# ============================================================
+#
+# Files: pair-rough-smooth-rocks-left.png · pair-rough-smooth-rocks-right.png
+# Label: Rough Rock vs Smooth Rock
+# Matching: Shape, Color  (NOT Texture)
+#
+# LEFT PROMPT:
+# "Single brown pebble rock centered on black background, very rough gritty
+# pebbly surface, kid clipart 3D, no text, square"
+#
+# RIGHT PROMPT:
+# "Single brown pebble rock centered on black background, same blob shape and
+# size as rough rock pair, polished smooth glossy surface, no text, square"
+#
+# ============================================================
+# PAIR 08 — All three match (twins)
+# ============================================================
+#
+# Files: pair-twin-strawberries-left.png · pair-twin-strawberries-right.png
+# Label: Twin Strawberries
+# Matching: Shape, Color, Texture  (ALL)
+#
+# LEFT PROMPT:
+# "Single red strawberry centered on black background, heart shape, bright red,
+# tiny seed dot texture, kid cartoon 3D, no text, square"
+#
+# RIGHT PROMPT:
+# "Single identical red strawberry centered on black background, perfect twin of
+# left strawberry, same shape color and seed texture, no text, square"
+#
+# ============================================================
+# COVERAGE MATRIX (8 pairs — 5 picked per run)
+# ============================================================
+#
+# | Pair | Shape | Color | Texture |
+# |------|-------|-------|---------|
+# | 01 star/circle yellow      |     |  ✓  |  ✓  |
+# | 02 red/blue balls          |  ✓  |     |  ✓  |
+# | 03 wood/metal cubes        |  ✓  |     |     |
+# | 04 red/green apples        |  ✓  |     |  ✓  |
+# | 05 orange/tennis           |  ✓  |     |     |
+# | 06 dolphin real/plush      |  ✓  |  ✓  |     |
+# | 07 rough/smooth rocks      |  ✓  |  ✓  |     |
+# | 08 twin strawberries       |  ✓  |  ✓  |  ✓  |
+#
+# REMOVED FROM POOL: fluffy/smooth cats · striped/plain socks
+#
+# WIRED IN: lib/level4-feature-recognition.ts → LEVEL4_COMPARE_POOL
+# UI: components/level-4-feature-recognition.tsx (two singles + multi-select Check)
+#
+# ============================================================
+# CHECKLIST — 16 single PNGs (8 pairs)
+# ============================================================
+# [x] pair-star-circle-yellow-left.png / -right.png
+# [x] pair-red-blue-balls-left.png / -right.png
+# [x] pair-wood-metal-cubes-left.png / -right.png
+# [x] pair-red-green-apples-left.png / -right.png
+# [x] pair-orange-tennis-ball-left.png / -right.png
+# [x] pair-dolphin-real-plush-left.png / -right.png
+# [x] pair-rough-smooth-rocks-left.png / -right.png
+# [x] pair-twin-strawberries-left.png / -right.png
+#
+# After placing files:
+# 1. Keep in G:\Cursor\FreeBuff\minu-s-magic-glasses\public\images\level4\singles\
+# 2. Robocopy public/ to dev worktree
+# 3. Tell dev: "Level 4 pair singles are in public/images/level4/singles/"
+# ============================================================

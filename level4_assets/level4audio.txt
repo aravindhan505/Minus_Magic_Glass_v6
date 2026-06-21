@@ -3,61 +3,361 @@
 # Project: Minu's Magic Glasses
 # Planet: Feature Recognition (Level 4)
 #
-# FLOW
-# ────
-# 1. Level intro on enter (narrator_level4_intro.mp3)
-# 2. Activity — 5 comparison rounds (pick Shape / Color / Texture)
-# 3. Visual quiz — 3 image MCQs · pass 2/3 (67%)
+# PURPOSE
+# ───────
+# Complete list of NARRATOR voice lines for Level 4 only.
+# Generate each as an MP3, then drop into the folders below.
+#
+# LEVEL 4 FLOW (what the audio must match)
+# ─────────────────────────────────────────
+# 1. Level intro — plays on enter (level-screen.tsx → narrator_level4_intro.mp3)
+# 2. Common Features Activity — 5 random comparison rounds from pool of 8
+#    Two separate figures side by side (public/images/level4/singles/)
+#    Kid multi-selects Shape / Color / Texture → taps Check
+#    Must pick EVERY feature both figures share (and no extras) to pass the round
+# 3. Final Quiz — 3 random visual pair questions from pool of 6 · pass 2/3 (67%)
+#    Shared LevelQuiz UI · options shuffled each attempt
+#
+# UI TEXT THE AUDIO SHOULD ALIGN WITH
+# ───────────────────────────────────
+# Activity header: "Level 4 · Feature Recognition" / pair label (e.g. "Red Ball vs Blue Ball")
+# Sidebar label: "Common Features"
+# Sidebar status (idle): "Look at both figures. Tap every feature they share — shape, color,
+#   or texture — then press Check!"
+# Top question bar: "What do BOTH figures share? Tap Shape, Color, and/or Texture — then press Check!"
+# Empty check: "Tap at least one feature that both figures share, then press Check!"
+# Wrong (mixed): "Some picks are right, but you missed a match and picked one that differs!"
+# Wrong (missing): "Almost! You missed a feature that both figures share — look again!"
+# Wrong (extra): "One of those features is different between the two figures — try again!"
+# Correct: per-round explain text appears in sidebar (see pair pool below)
+# Quiz header: "Level 4 Quiz" / "Feature Spotter!"
+# Quiz pass message (on screen): "Sharp eyes! You can spot shape, color, and texture differences!"
+#
+# PAIR POOL (8 total — app picks 5 per run; generate ALL pair clips so any combo works)
+# ─────────────────────────────────────────────────────────────────────────────────────
+# star-circle-yellow   · Color + Texture match (shape differs)
+# red-blue-balls       · Shape + Texture match (color differs)
+# wood-metal-cubes     · Shape only
+# red-green-apples     · Shape + Texture match (color differs)
+# orange-tennis-ball   · Shape only
+# dolphin-real-plush   · Shape + Color match (texture differs)
+# rough-smooth-rocks   · Shape + Color match (texture differs)
+# twin-strawberries    · Shape + Color + Texture (all three)
+#
+# QUIZ POOL (6 total — app picks 3 per run; generate ALL clips so any combo works)
+# ─────────────────────────────────────────────────────────────────────────────────
+# shape-same-color-diff          · correct: red-blue-balls
+# color-same-shape-diff          · correct: star-circle-yellow
+# texture-same-shape-diff        · correct: star-circle-yellow
+# all-three-match                · correct: twin-strawberries
+# shape-color-same-texture-diff  · correct: dolphin-real-plush
+# shape-texture-same-color-diff  · correct: red-green-apples
+#
+# VOICE DIRECTION
+# ───────────────
+# NARRATOR: Warm, friendly adult (PBS / Blue's Clues host)
+#   - Clear, slightly slow pace for ages 5–8
+#   - Encouraging, patient, never condescending
+#   - Use "shape," "color," "texture," and "what they share" language — spot-the-match vibe
+#   - Shape = outline / silhouette · Color = main color · Texture = how the surface feels
+#
+# GENERATION SETTINGS
+# ───────────────────
+# Format: MP3, 44.1 kHz
+# Normalize peak: -3 dB
+# Keep volume consistent across all Level 4 files
+# Speed: Slightly slower than normal conversation
 #
 # WHERE TO PUT FILES
 # ──────────────────
 # public/audio/level_4/
 #
-# VOICE: Warm PBS-style adult narrator · MP3 44.1 kHz · peak -3 dB
+# Level intro (until module uses intro bridge like Level 2/3/5):
+#   Also place narrator_level4_intro.mp3 in public/audio/minu/
+#   (level-screen.tsx plays it on enter today)
 #
+# Shared quiz correct/incorrect clips stay in public/audio/minu/
+#
+# FILE NAMING: narrator_level4_<topic>.mp3
+# Use the exact filename shown before each block.
+#
+# ALREADY EXISTS (shared — do NOT re-generate unless updating)
+# ─────────────────────────────────────────────────────────────
+# narrator_quiz_correct.mp3
+# narrator_quiz_correct_amazing.mp3
+# narrator_quiz_incorrect.mp3
+# narrator_quiz_incorrect_try.mp3
+# narrator_level_complete.mp3
+#
+# CODE-GENERATED SFX (no MP3 needed)
+# ──────────────────────────────────
+# playFanfare() — round correct celebration (Web Audio API)
+# playError() — wrong check feedback tone
+# playClick() — button taps
+#
+# SUPERSEDES (old level4audio.txt — do NOT use these texts or filenames)
+# ───────────────────────────────────────────────────────────────────────
+# narrator_level4_correct_shape.mp3    — was "biggest difference is shape" (removed)
+# narrator_level4_correct_color.mp3    — was "biggest difference is color" (removed)
+# narrator_level4_correct_texture.mp3  — was "biggest difference is texture" (removed)
+# Old round_start about "biggest clue" — replaced by common-features wording
+# Old single combined pair PNG flow — now left/right singles in level4/singles/
+#
+# WIRING TARGET (for dev after MP3s are placed)
+# ──────────────────────────────────────────────
+# lib/level4-audio.ts → playLevel4Narrator() / playLevel4Then()
+#   LEVEL4_PAIR_AUDIO map keyed by LEVEL4_COMPARE_POOL[].id
+#   LEVEL4_QUIZ_QUESTION_AUDIO map keyed by LEVEL4_QUIZ_POOL[].id
+# components/level-4-feature-recognition.tsx — activity + quiz narrator hooks
+# Optional: intro-bridge + quiz-bridge screens (match Level 2/3/5 pattern)
+#
+# TOTAL NARRATOR FILES TO GENERATE: 27
+# =================================================
+
+
 # ============================================================
-# FILES TO GENERATE
+# SECTION A — Level Entry (plays when entering Level 4)
+# ============================================================
+
+narrator_level4_intro.mp3
+  Trigger: Level screen mount (level-screen.tsx → public/audio/minu/)
+  Text: "Welcome to Feature Recognition! Two pictures sit side by side. Your job is to find what they have in common — their shape, their color, or their texture. Tap every feature both figures share, then press Check. Help Minu spot the matching clues!"
+  Emotion: Curious, detective-like, inviting
+  Notes: REPLACES old intro about picking the biggest difference
+
+
+# ============================================================
+# SECTION B — Common Features Activity (5 random rounds)
+# ============================================================
+
+narrator_level4_activity_intro.mp3
+  Trigger: First comparison round only — once when activity phase loads
+  Text: "Look at both figures carefully. Shape means the outline. Color means how they look. Texture means how the surface feels — smooth, bumpy, or fuzzy. Tap every button for a feature that BOTH figures share. Do not tap features that are different. When you are ready, press Check!"
+  Emotion: Clear, teaching, enthusiastic
+  Notes: Do NOT chain round_start after this clip on round 1
+
+narrator_level4_round_start.mp3
+  Trigger: Comparison rounds 2 through 5 — when a new pair appears
+  Text: "New pair! Study both pictures. Which features do they share — shape, color, texture, or more than one? Tap all the matches, then press Check!"
+  Emotion: Fresh energy, encouraging
+  Notes: App picks 5 random pairs from pool of 8 — do not name the pair in audio
+
+narrator_level4_reminder.mp3
+  Trigger: Idle 30+ seconds during activity (optional — not wired yet)
+  Text: "Compare the left and right figures. Ask yourself — is the shape the same? The color? The texture? Tap every feature they share, then press Check!"
+  Emotion: Patient, gentle nudge
+
+# --- Check feedback (wrong attempts — matches on-screen sidebar text) ---
+
+narrator_level4_wrong_empty.mp3
+  Trigger: Check tapped with no features selected
+  Text: "Tap at least one feature you think both figures share — shape, color, or texture — then press Check!"
+  Emotion: Gentle redirect
+
+narrator_level4_wrong_missing.mp3
+  Trigger: Kid missed one or more shared features
+  Text: "Almost! You missed a feature that both figures share. Look again at shape, color, and texture — did you tap every match?"
+  Emotion: Encouraging, teaching
+
+narrator_level4_wrong_extra.mp3
+  Trigger: Kid picked a feature that differs between the two figures
+  Text: "One of those features is different between the two figures. Un-tap anything that does not match on both sides, then try again!"
+  Emotion: Calm, redirecting
+
+narrator_level4_wrong_mixed.mp3
+  Trigger: Kid both missed a match AND picked a non-matching feature
+  Text: "Some picks are right, but you missed a shared feature and picked one that differs. Look at both figures again!"
+  Emotion: Patient, not scolding
+
+# --- Round correct — per-pair explain lines ---
+# Generate ALL 8 (app picks 5 random pairs per run).
+# Text mirrors round.explain in lib/level4-feature-recognition.ts
+# Wired in: public/audio/level_4/ · keyed by round.id
+
+narrator_level4_pair_star_circle_yellow.mp3
+  Trigger: Correct check — star-circle-yellow round (label: Yellow Star vs Yellow Circle)
+  Text: "Yes! Same yellow color and both feel smooth — but a star and a circle are different shapes!"
+  Emotion: Celebratory, teaching
+
+narrator_level4_pair_red_blue_balls.mp3
+  Trigger: Correct check — red-blue-balls round
+  Text: "Nice! Both are smooth round balls — same shape and texture, but different colors!"
+  Emotion: Cheerful, clear
+
+narrator_level4_pair_wood_metal_cubes.mp3
+  Trigger: Correct check — wood-metal-cubes round
+  Text: "Right! Both are cubes — same shape! But the wood and metal look and feel very different."
+  Emotion: Proud, comparing
+
+narrator_level4_pair_red_green_apples.mp3
+  Trigger: Correct check — red-green-apples round
+  Text: "Great! Same apple shape and both have smooth shiny skin — just different colors!"
+  Emotion: Warm, fruity fun
+
+narrator_level4_pair_orange_tennis_ball.mp3
+  Trigger: Correct check — orange-tennis-ball round
+  Text: "Good spot! Both are round ball shapes — but the colors and surfaces are different!"
+  Emotion: Playful, sporty
+
+narrator_level4_pair_dolphin_real_plush.mp3
+  Trigger: Correct check — dolphin-real-plush round
+  Text: "Wonderful! Same dolphin shape and gray-blue color — one is smooth, one is soft and fuzzy!"
+  Emotion: Delighted, gentle
+
+narrator_level4_pair_rough_smooth_rocks.mp3
+  Trigger: Correct check — rough-smooth-rocks round
+  Text: "Yes! Same rock shape and brown color — one is rough, one is polished smooth!"
+  Emotion: Thoughtful, comparing textures
+
+narrator_level4_pair_twin_strawberries.mp3
+  Trigger: Correct check — twin-strawberries round
+  Text: "Perfect twins! Same shape, same red color, and same bumpy strawberry texture!"
+  Emotion: Peak celebration, amazed
+
+narrator_level4_all_rounds_done.mp3
+  Trigger: After final activity round correct → quiz phase (or quiz bridge when wired)
+  Text: "Fantastic feature spotting! You compared five pairs and found what they share. One last challenge — the Feature Spotter Quiz!"
+  Emotion: Proud, building anticipation
+
+
+# ============================================================
+# SECTION C — Final Quiz (3 random visual questions · pass 2/3)
+# ============================================================
+
+narrator_level4_quiz_intro.mp3
+  Trigger: Quiz phase starts (or quiz-bridge Continue when wired)
+  Text: "Feature Spotter Quiz! I will show you picture pairs. Read each question, then tap the pair that fits. Three questions — get two right to pass and calibrate Minu's feature lens!"
+  Emotion: Confident, encouraging
+  Notes: REPLACES old quiz intro that did not mention shuffled options or 6-question pool
+
+narrator_level4_quiz_question.mp3
+  Trigger: Each new quiz question (optional — play when question appears)
+  Text: "Read the question, then tap the picture pair that matches!"
+  Emotion: Neutral, supportive
+
+# --- One clip per quiz pool question (LEVEL4_QUIZ_POOL in level4-feature-recognition.ts) ---
+# App picks 3 random per session — generate ALL 6 so any combo works.
+
+narrator_level4_quiz_shape_same_color_diff.mp3
+  Trigger: Quiz question id: shape-same-color-diff
+  Text: "Find the pair where the shape is the same but the color is different. Look at the outlines first!"
+  Emotion: Teaching, focused
+
+narrator_level4_quiz_color_same_shape_diff.mp3
+  Trigger: Quiz question id: color-same-shape-diff
+  Text: "Find the pair where the color is the same but the shape is different. Same color, different outlines!"
+  Emotion: Teaching, focused
+
+narrator_level4_quiz_texture_same_shape_diff.mp3
+  Trigger: Quiz question id: texture-same-shape-diff
+  Text: "Find the pair where the texture is the same but the shape is different. Think about how the surfaces feel!"
+  Emotion: Teaching, thoughtful
+
+narrator_level4_quiz_all_three_match.mp3
+  Trigger: Quiz question id: all-three-match
+  Text: "Find the perfect twins! Tap the pair where shape, color, AND texture all match!"
+  Emotion: Excited, challenge vibe
+
+narrator_level4_quiz_shape_color_same_texture_diff.mp3
+  Trigger: Quiz question id: shape-color-same-texture-diff
+  Text: "Find the pair where shape and color match, but texture is different. Same look, different feel!"
+  Emotion: Teaching, comparing
+
+narrator_level4_quiz_shape_texture_same_color_diff.mp3
+  Trigger: Quiz question id: shape-texture-same-color-diff
+  Text: "Find the pair where shape and texture match, but color is different. Same form and feel, different colors!"
+  Emotion: Teaching, comparing
+
+# Quiz correct/incorrect: use existing shared files (header above).
+# Do NOT create duplicates:
+#   narrator_quiz_correct.mp3 / narrator_quiz_correct_amazing.mp3
+#   narrator_quiz_incorrect.mp3 / narrator_quiz_incorrect_try.mp3
+
+narrator_level4_quiz_pass.mp3
+  Trigger: Quiz passed (2/3 or better)
+  Text: "You passed! You can spot shape, color, and texture like a pro. Minu's feature lens is calibrated!"
+  Emotion: Peak pride, celebration
+
+narrator_level4_quiz_fail.mp3
+  Trigger: Quiz failed (below 2/3) — before retry
+  Text: "Good try! Remember — shape is the outline, color is how they look, and texture is how they feel. Study the pairs and give the quiz another go!"
+  Emotion: Encouraging, no disappointment
+
+
+# ============================================================
+# SECTION D — Optional Minu Reactions (Level 4 only)
+# Generate these if you want Minu voice lines too (not narrator).
+# Place in: public/audio/minu/
+# ============================================================
+
+minu_level4_two_pictures.mp3
+  Voice: Minu
+  Trigger: Activity starts or first pair loads
+  Text: "Two pictures side by side! I wonder what they have in common — shape, color, or texture?"
+  Emotion: Curious, intrigued
+
+minu_level4_feature_buttons.mp3
+  Voice: Minu
+  Trigger: First feature button tapped in a round
+  Text: "Ooh, I can tap more than one! Some pairs share two features, or even all three!"
+  Emotion: Delighted discovery
+
+minu_level4_correct_gasp.mp3
+  Voice: Minu
+  Trigger: Correct check on a round
+  Text: "We found every match! Shape, color, texture — we are feature detectives!"
+  Emotion: Proud, amazed
+
+minu_level4_quiz_ready.mp3
+  Voice: Minu
+  Trigger: Quiz starts
+  Text: "A picture quiz? We compared so many pairs — I bet we can get two out of three!"
+  Emotion: Nervous but hopeful
+
+
+# ============================================================
+# QUICK CHECKLIST — 27 narrator files to generate
 # ============================================================
 #
-# narrator_level4_intro.mp3
-#   Text: "Feature Recognition Planet! Two pictures sit side by side. Your job:
-#   decide if they differ by shape, color, or texture!"
+# SECTION A — Entry (1)
+# [ ] narrator_level4_intro.mp3                    (also in public/audio/minu/)
 #
-# narrator_level4_round_start.mp3
-#   Text: "New pair! Look closely — is shape, color, or texture the biggest clue?"
-#
-# narrator_level4_correct_shape.mp3
-#   Text: "Yes! Their outlines and shapes are what stand out!"
-#
-# narrator_level4_correct_color.mp3
-#   Text: "Right! The colors are the big difference!"
-#
-# narrator_level4_correct_texture.mp3
-#   Text: "Nice! Their surfaces feel different — that's texture!"
-#
-# narrator_level4_wrong.mp3
-#   Text: "Hmm, look again. Which feature jumps out first — shape, color, or texture?"
-#
-# narrator_level4_quiz_intro.mp3
-#   Text: "Feature Spotter Quiz! Tap the picture pairs. Get two out of three to pass!"
-#
-# narrator_level4_quiz_pass.mp3
-#   Text: "Fantastic! You can spot shape, color, and texture like a pro!"
-#
-# narrator_level4_quiz_fail.mp3
-#   Text: "Almost! Study the pairs once more and try the quiz again."
-#
-# Quiz correct/incorrect: shared public/audio/minu/narrator_quiz_*.mp3
-#
-# ============================================================
-# CHECKLIST — 9 Level 4 narrator files
-# ============================================================
-# [ ] narrator_level4_intro.mp3
+# SECTION B — Activity (16)
+# [ ] narrator_level4_activity_intro.mp3
 # [ ] narrator_level4_round_start.mp3
-# [ ] narrator_level4_correct_shape.mp3
-# [ ] narrator_level4_correct_color.mp3
-# [ ] narrator_level4_correct_texture.mp3
-# [ ] narrator_level4_wrong.mp3
+# [ ] narrator_level4_reminder.mp3
+# [ ] narrator_level4_wrong_empty.mp3
+# [ ] narrator_level4_wrong_missing.mp3
+# [ ] narrator_level4_wrong_extra.mp3
+# [ ] narrator_level4_wrong_mixed.mp3
+# [ ] narrator_level4_pair_star_circle_yellow.mp3
+# [ ] narrator_level4_pair_red_blue_balls.mp3
+# [ ] narrator_level4_pair_wood_metal_cubes.mp3
+# [ ] narrator_level4_pair_red_green_apples.mp3
+# [ ] narrator_level4_pair_orange_tennis_ball.mp3
+# [ ] narrator_level4_pair_dolphin_real_plush.mp3
+# [ ] narrator_level4_pair_rough_smooth_rocks.mp3
+# [ ] narrator_level4_pair_twin_strawberries.mp3
+# [ ] narrator_level4_all_rounds_done.mp3
+#
+# SECTION C — Quiz (10)
 # [ ] narrator_level4_quiz_intro.mp3
+# [ ] narrator_level4_quiz_question.mp3
+# [ ] narrator_level4_quiz_shape_same_color_diff.mp3
+# [ ] narrator_level4_quiz_color_same_shape_diff.mp3
+# [ ] narrator_level4_quiz_texture_same_shape_diff.mp3
+# [ ] narrator_level4_quiz_all_three_match.mp3
+# [ ] narrator_level4_quiz_shape_color_same_texture_diff.mp3
+# [ ] narrator_level4_quiz_shape_texture_same_color_diff.mp3
 # [ ] narrator_level4_quiz_pass.mp3
 # [ ] narrator_level4_quiz_fail.mp3
+#
+# Optional Minu (4 files):
+# [ ] minu_level4_two_pictures.mp3
+# [ ] minu_level4_feature_buttons.mp3
+# [ ] minu_level4_correct_gasp.mp3
+# [ ] minu_level4_quiz_ready.mp3
+#
+# After placing files, tell the dev:
+# "I've placed the Level 4 narrator MP3s in public/audio/level_4/"
+# ============================================================

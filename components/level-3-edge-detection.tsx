@@ -5,15 +5,24 @@ import Image from "next/image"
 import { ArrowLeft, Zap, CheckCircle2, RotateCcw, Lightbulb, Star, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MinuAvatar } from "@/components/minu-avatar"
+import { LevelQuiz } from "@/components/level-quiz"
+import { Level5PartBridge } from "@/components/level-5-part-bridge"
 import { Starfield } from "@/components/starfield"
-import { playClick, playFanfare, playError } from "@/lib/audio"
+import { playClick, playFanfare, playTraceDot } from "@/lib/audio"
+import {
+  LEVEL3_QUIZ_QUESTION_AUDIO,
+  playLevel3Narrator,
+  playLevel3RevealForRound,
+  playLevel3Then,
+} from "@/lib/level3-audio"
 import type { LevelActivityProps } from "@/lib/level-data"
 import type { MinuPose } from "@/lib/minu-config"
 import {
-  LEVEL3_QUIZ,
   LEVEL3_QUIZ_PASS_PERCENT,
   LEVEL3_REQUIRED_FRACTION,
+  getRandomLevel3Quiz,
   getRandomLevel3Rounds,
+  level3QuizToQuizQuestions,
   distToSegment,
   type TraceDot,
 } from "@/lib/level3-edge-detection"
@@ -23,12 +32,18 @@ import {
 } from "@/lib/level3-trace-dots"
 import { cn } from "@/lib/utils"
 
-type Phase = "activity" | "quiz"
+type Phase = "intro-bridge" | "activity" | "quiz-bridge" | "quiz"
+
+const IDLE_REMINDER_MS = 30_000
 
 export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivityProps) {
-  const [phase, setPhase] = useState<Phase>("activity")
+  const [phase, setPhase] = useState<Phase>("intro-bridge")
   const [runKey] = useState(() => Date.now())
+  const [quizKey, setQuizKey] = useState(0)
+  const [quizIntroDone, setQuizIntroDone] = useState(false)
   const rounds = useMemo(() => getRandomLevel3Rounds(), [runKey])
+  const quizPool = useMemo(() => getRandomLevel3Quiz(), [runKey, quizKey])
+  const quizQuestions = useMemo(() => level3QuizToQuizQuestions(quizPool), [quizPool])
 
   const [roundIndex, setRoundIndex] = useState(0)
   const [litDots, setLitDots] = useState<Set<number>>(new Set())
@@ -39,6 +54,7 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
     "A mystery shape! Trace every dot along the edges to reveal the picture!",
   )
   const [hintVisible, setHintVisible] = useState(false)
+  const [hintActive, setHintActive] = useState(false)
   const [silhouetteOk, setSilhouetteOk] = useState(true)
   const [traceDots, setTraceDots] = useState<TraceDot[]>([])
   const [viewBox, setViewBox] = useState({ w: 1, h: 1 })
@@ -49,18 +65,47 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
   })
   const [dotsLoading, setDotsLoading] = useState(true)
 
-  const [quizIndex, setQuizIndex] = useState(0)
-  const [quizScore, setQuizScore] = useState(0)
-  const [quizSelected, setQuizSelected] = useState<number | null>(null)
-  const [quizCorrect, setQuizCorrect] = useState<boolean | null>(null)
-  const [quizDone, setQuizDone] = useState(false)
-
   const svgRef = useRef<SVGSVGElement>(null)
   const prevPosRef = useRef<{ x: number; y: number } | null>(null)
+  const activityIntroPlayed = useRef(false)
+  const revealPlayedForRound = useRef(-1)
+  const almostDonePlayed = useRef(false)
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearIdleTimer = useCallback(() => {
+    if (idleTimer.current) {
+      clearTimeout(idleTimer.current)
+      idleTimer.current = null
+    }
+  }, [])
+
   const round = rounds[roundIndex]
   const dotCount = traceDots.length || 1
   const progress = litDots.size / dotCount
   const progressPct = Math.min(100, Math.round(progress * 100))
+
+  const isDotMappingScreenVisible =
+    phase === "activity" &&
+    !roundDone &&
+    !colorRevealed &&
+    !dotsLoading &&
+    traceDots.length > 0
+
+  const scheduleIdleReminder = useCallback(() => {
+    clearIdleTimer()
+    if (!isDotMappingScreenVisible) return
+    idleTimer.current = setTimeout(() => {
+      playLevel3Narrator("narrator_level3_reminder.mp3")
+    }, IDLE_REMINDER_MS)
+  }, [isDotMappingScreenVisible, clearIdleTimer])
+
+  useEffect(() => {
+    if (isDotMappingScreenVisible) {
+      scheduleIdleReminder()
+    } else {
+      clearIdleTimer()
+    }
+  }, [isDotMappingScreenVisible, scheduleIdleReminder, clearIdleTimer])
 
   useEffect(() => {
     if (!round) return
@@ -70,7 +115,9 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
     setSilhouetteOk(true)
     setColorRevealed(false)
     setRoundDone(false)
+    setHintActive(false)
     prevPosRef.current = null
+    almostDonePlayed.current = false
 
     extractTraceDotsFromSilhouette(round.silhouetteSrc)
       .then(({ dots, width, height }) => {
@@ -92,6 +139,29 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
       cancelled = true
     }
   }, [round])
+
+  useEffect(() => {
+    if (phase !== "activity" || !round || roundIndex !== 0) return
+    if (activityIntroPlayed.current) return
+    activityIntroPlayed.current = true
+    playLevel3Narrator("narrator_level3_activity_intro.mp3")
+  }, [phase, roundIndex, round])
+
+  useEffect(() => {
+    if (phase !== "activity" || roundDone) return
+    if (progress < 0.8 || almostDonePlayed.current) return
+    almostDonePlayed.current = true
+    playLevel3Narrator("narrator_level3_hint_almost_done.mp3")
+  }, [phase, progress, roundDone])
+
+  useEffect(() => {
+    if (!roundDone || !round) return
+    if (revealPlayedForRound.current === roundIndex) return
+    revealPlayedForRound.current = roundIndex
+    playLevel3RevealForRound(round.id)
+  }, [roundDone, round, roundIndex])
+
+  useEffect(() => () => clearIdleTimer(), [clearIdleTimer])
 
   useEffect(() => {
     if (!round || roundDone) return
@@ -127,6 +197,8 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
       prevPosRef.current = { x: curX, y: curY }
       const hitRadius = traceMetrics.traceRadius
 
+      let added = 0
+      let newLitCount = 0
       setLitDots((prevDots) => {
         const next = new Set(prevDots)
         traceDots.forEach((dot, i) => {
@@ -136,28 +208,70 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
             : Math.sqrt((dot.x - curX) ** 2 + (dot.y - curY) ** 2)
           if (dist <= hitRadius) next.add(i)
         })
+        added = next.size - prevDots.size
+        newLitCount = next.size
         return next.size !== prevDots.size ? next : prevDots
       })
+      if (added > 0) {
+        playTraceDot(newLitCount)
+        setHintActive(false)
+        scheduleIdleReminder()
+      }
     },
-    [round, roundDone, dotsLoading, traceDots, traceMetrics.traceRadius],
+    [round, roundDone, dotsLoading, traceDots, traceMetrics.traceRadius, scheduleIdleReminder],
   )
+
+  const handleIntroBridgeReady = useCallback(() => {
+    setPhase("activity")
+  }, [])
+
+  const handleQuizBridgeReady = useCallback(() => {
+    setQuizIntroDone(true)
+    setPhase("quiz")
+  }, [])
+
+  const handleQuizQuestionStart = useCallback(
+    (questionIndex: number) => {
+      const q = quizPool[questionIndex]
+      if (!q) return
+      const clip = LEVEL3_QUIZ_QUESTION_AUDIO[q.id]
+      if (clip) playLevel3Narrator(clip)
+    },
+    [quizPool],
+  )
+
+  const handleQuizPass = useCallback(() => {
+    playLevel3Narrator("narrator_level3_quiz_pass.mp3")
+  }, [])
+
+  const handleQuizFail = useCallback(() => {
+    playLevel3Narrator("narrator_level3_quiz_fail.mp3")
+  }, [])
+
+  const advanceToRound = useCallback((nextIndex: number) => {
+    setRoundIndex(nextIndex)
+    setLitDots(new Set())
+    setRoundDone(false)
+    setColorRevealed(false)
+    setMinuPose("pointing")
+    setStatusText(
+      "A mystery shape! Trace every dot along the edges to reveal the picture!",
+    )
+    setHintVisible(false)
+    setHintActive(false)
+    almostDonePlayed.current = false
+    prevPosRef.current = null
+  }, [])
 
   const goNextRound = () => {
     playClick()
-    prevPosRef.current = null
     if (roundIndex < rounds.length - 1) {
-      const next = roundIndex + 1
-      setRoundIndex(next)
-      setLitDots(new Set())
-      setRoundDone(false)
-      setColorRevealed(false)
-      setMinuPose("pointing")
-      setStatusText(
-        "A mystery shape! Trace every dot along the edges to reveal the picture!",
-      )
-      setHintVisible(false)
+      playLevel3Then("narrator_level3_next_mystery.mp3", () => {
+        advanceToRound(roundIndex + 1)
+        playLevel3Narrator("narrator_level3_round_start.mp3")
+      })
     } else {
-      setPhase("quiz")
+      playLevel3Then("narrator_level3_all_rounds_done.mp3", () => setPhase("quiz-bridge"))
     }
   }
 
@@ -170,51 +284,63 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
     setMinuPose("pointing")
     setStatusText(round?.instruction ?? "")
     setHintVisible(false)
+    setHintActive(false)
   }
 
-  const handleQuizAnswer = (optionIndex: number) => {
-    if (quizSelected !== null) return
+  const showHint = () => {
     playClick()
-    const q = LEVEL3_QUIZ[quizIndex]
-    const correct = optionIndex === q.correct
-    setQuizSelected(optionIndex)
-    setQuizCorrect(correct)
-    const newScore = correct ? quizScore + 1 : quizScore
-    if (correct) setQuizScore(newScore)
-    else playError()
-
-    setTimeout(() => {
-      const next = quizIndex + 1
-      if (next < LEVEL3_QUIZ.length) {
-        setQuizIndex(next)
-        setQuizSelected(null)
-        setQuizCorrect(null)
-      } else {
-        setQuizDone(true)
-        const passCount = Math.ceil((LEVEL3_QUIZ.length * LEVEL3_QUIZ_PASS_PERCENT) / 100)
-        if (newScore >= passCount) playFanfare()
-      }
-    }, 1000)
+    clearIdleTimer()
+    setHintVisible(true)
+    setHintActive(true)
+    playLevel3Narrator("narrator_level3_hint_glow.mp3")
   }
 
-  const retryQuiz = () => {
-    playClick()
-    setQuizIndex(0)
-    setQuizScore(0)
-    setQuizSelected(null)
-    setQuizCorrect(null)
-    setQuizDone(false)
-  }
-
-  const passCount = Math.ceil((LEVEL3_QUIZ.length * LEVEL3_QUIZ_PASS_PERCENT) / 100)
+  const missedDotCount = traceDots.length - litDots.size
 
   if (!round) return null
 
+  if (phase === "intro-bridge") {
+    return (
+      <Level5PartBridge
+        key="l3-intro-bridge"
+        levelBadge="Level 3 · Edge Detection"
+        partLabel="Welcome"
+        title="Map the Edges!"
+        tagline="Trace mystery silhouettes dot by dot — reveal the real picture when every edge is found!"
+        narratorFile="narrator_level3_intro.mp3"
+        accentClass="border-chart-3/50 shadow-chart-3/25"
+        minuPose="waving"
+        playThen={playLevel3Then}
+        onReady={handleIntroBridgeReady}
+      />
+    )
+  }
+
+  if (phase === "quiz-bridge") {
+    return (
+      <Level5PartBridge
+        key="l3-quiz-bridge"
+        levelBadge="Level 3 · Edge Detection"
+        partLabel="Final Challenge"
+        title="Edge Detective Quiz"
+        tagline="Three random questions — get two right to calibrate Minu's edge lens!"
+        narratorFile="narrator_level3_quiz_intro.mp3"
+        accentClass="border-accent/50 shadow-accent/25"
+        minuPose="thinking"
+        playThen={playLevel3Then}
+        onReady={handleQuizBridgeReady}
+      />
+    )
+  }
+
   if (phase === "quiz") {
-    const q = LEVEL3_QUIZ[quizIndex]
     return (
       <main className="relative flex h-dvh max-h-dvh w-full flex-col overflow-hidden bg-background">
         <Starfield count={70} />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary/15 to-transparent"
+        />
         <header className="relative z-10 flex shrink-0 items-center gap-3 border-b border-primary/20 px-4 py-3 sm:px-6">
           <Button
             size="icon"
@@ -230,95 +356,38 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
           </Button>
           <div className="min-w-0 flex-1">
             <p className="font-heading text-xs font-bold tracking-wide text-secondary uppercase">
-              Level 3 Quiz
+              Quiz · Edge Detection
             </p>
             <h1 className="font-heading text-lg font-extrabold text-foreground sm:text-xl">
-              Edge Detective!
+              3 Random Questions!
             </h1>
           </div>
-          <Star className="size-6 shrink-0 text-secondary" />
+          <Sparkles className="size-6 shrink-0 text-secondary drop-shadow-[0_0_8px_var(--chart-2)]" />
         </header>
-
-        <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-lg flex-1 flex-col justify-center gap-5 px-4 py-4">
-          {!quizDone ? (
-            <>
-              <p className="font-heading text-center text-xs font-bold text-muted-foreground">
-                Question {quizIndex + 1} of {LEVEL3_QUIZ.length}
-              </p>
-              <p className="font-heading text-center text-base font-extrabold text-foreground sm:text-lg">
-                {q.question}
-              </p>
-              <div className="flex flex-col gap-2">
-                {q.options.map((opt, i) => {
-                  const isSelected = quizSelected === i
-                  const isRight = isSelected && quizCorrect === true
-                  const isWrong = isSelected && quizCorrect === false
-                  const isMissed =
-                    quizSelected !== null && !isSelected && i === q.correct
-                  return (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => handleQuizAnswer(i)}
-                      disabled={quizSelected !== null}
-                      className={cn(
-                        "rounded-2xl border-2 px-4 py-3 text-left font-heading text-sm font-bold transition-all",
-                        quizSelected === null &&
-                          "border-border hover:border-secondary/70 hover:bg-secondary/10",
-                        isRight && "border-accent bg-accent/15 text-accent",
-                        isWrong && "border-destructive bg-destructive/15",
-                        isMissed && "border-accent/50 bg-accent/5",
-                      )}
-                    >
-                      {opt}
-                    </button>
-                  )
-                })}
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-col items-center gap-5 text-center">
-              <MinuAvatar pose={quizScore >= passCount ? "celebrating" : "empathetic"} size={100} />
-              <p className="font-heading text-xl font-extrabold text-foreground">
-                {quizScore >= passCount ? "Awesome!" : "Keep trying!"} You scored {quizScore}/
-                {LEVEL3_QUIZ.length}!
-              </p>
-              {quizScore >= passCount ? (
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    playClick()
-                    onComplete()
-                  }}
-                  className="font-heading rounded-full px-8 font-extrabold"
-                >
-                  <CheckCircle2 className="size-5" /> Level Complete!
-                </Button>
-              ) : (
-                <div className="flex gap-3">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    onClick={retryQuiz}
-                    className="font-heading rounded-full px-6 font-extrabold"
-                  >
-                    <RotateCcw className="size-4" /> Try Again
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => {
-                      playClick()
-                      onBack()
-                    }}
-                    className="font-heading rounded-full px-6 font-extrabold"
-                  >
-                    <ArrowLeft className="size-4" /> Back
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
+        <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-lg flex-1 flex-col justify-center px-3 py-2 sm:px-4">
+          <LevelQuiz
+            key={quizKey}
+            questions={quizQuestions}
+            retryOnlyOnFail
+            compact
+            passPercent={LEVEL3_QUIZ_PASS_PERCENT}
+            questionNarratorEnabled={quizIntroDone}
+            onQuestionStart={handleQuizQuestionStart}
+            onPass={handleQuizPass}
+            onQuizFail={handleQuizFail}
+            successMessage="Sharp tracing! You really understand edges and outlines!"
+            onComplete={() => {
+              playFanfare()
+              onComplete()
+            }}
+            onBack={onBack}
+            onFail={() => {
+              playClick()
+              setQuizIntroDone(false)
+              setQuizKey((k) => k + 1)
+              setPhase("quiz-bridge")
+            }}
+          />
         </div>
       </main>
     )
@@ -397,13 +466,21 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={() => {
-                  playClick()
-                  setHintVisible((h) => !h)
-                }}
-                className="font-heading h-9 gap-1 rounded-full border border-secondary/30 text-[10px] font-bold sm:h-10 sm:text-xs"
+                onClick={showHint}
+                disabled={missedDotCount === 0}
+                className={cn(
+                  "font-heading h-9 gap-1 rounded-full border text-[10px] font-bold sm:h-10 sm:text-xs",
+                  hintActive
+                    ? "border-secondary bg-secondary/20 shadow-[0_0_12px_var(--secondary)]"
+                    : "border-secondary/30",
+                )}
               >
-                <Lightbulb className="size-3.5 text-secondary" />
+                <Lightbulb
+                  className={cn(
+                    "size-3.5 text-secondary",
+                    hintActive && "fill-secondary/40",
+                  )}
+                />
                 Hint
               </Button>
               <Button
@@ -420,7 +497,9 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
           )}
           {hintVisible && !roundDone && (
             <p className="rounded-xl bg-secondary/10 px-2 py-2 text-[10px] font-bold leading-snug text-secondary sm:text-xs">
-              {round.hint}
+              {hintActive && missedDotCount > 0
+                ? `Look for the ${missedDotCount} glowing dot${missedDotCount === 1 ? "" : "s"} you missed! ${round.hint}`
+                : round.hint}
             </p>
           )}
         </aside>
@@ -488,19 +567,48 @@ export default function Level3EdgeDetection({ onComplete, onBack }: LevelActivit
                   >
                     {traceDots.map((dot, i) => {
                       const lit = litDots.has(i)
+                      const hinted = hintActive && !lit
                       return (
-                        <circle
-                          key={i}
-                          cx={dot.x}
-                          cy={dot.y}
-                          r={lit ? traceMetrics.dotLit : traceMetrics.dotUnlit}
-                          fill={lit ? round.color : "#d1d5db"}
-                          opacity={lit ? 1 : 0.85}
-                          style={
-                            lit ? { filter: `drop-shadow(0 0 4px ${round.color})` } : undefined
-                          }
-                          className="transition-all duration-75"
-                        />
+                        <g key={i}>
+                          {hinted && (
+                            <circle
+                              cx={dot.x}
+                              cy={dot.y}
+                              r={traceMetrics.dotLit * 2.2}
+                              fill="none"
+                              stroke="#facc15"
+                              strokeWidth={traceMetrics.dotUnlit * 0.9}
+                              className="animate-trace-hint-pulse pointer-events-none"
+                              style={{
+                                filter: "drop-shadow(0 0 6px #fde047) drop-shadow(0 0 12px #facc15)",
+                              }}
+                            />
+                          )}
+                          <circle
+                            cx={dot.x}
+                            cy={dot.y}
+                            r={
+                              lit
+                                ? traceMetrics.dotLit
+                                : hinted
+                                  ? traceMetrics.dotLit * 1.15
+                                  : traceMetrics.dotUnlit
+                            }
+                            fill={lit ? round.color : hinted ? "#fde047" : "#d1d5db"}
+                            opacity={lit ? 1 : hinted ? 1 : 0.85}
+                            style={
+                              lit
+                                ? { filter: `drop-shadow(0 0 4px ${round.color})` }
+                                : hinted
+                                  ? {
+                                      filter:
+                                        "drop-shadow(0 0 5px #fde047) drop-shadow(0 0 10px #facc15)",
+                                    }
+                                  : undefined
+                            }
+                            className="transition-all duration-75"
+                          />
+                        </g>
                       )
                     })}
                   </svg>

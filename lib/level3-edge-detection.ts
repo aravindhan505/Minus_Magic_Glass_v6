@@ -242,35 +242,88 @@ export const LEVEL3_REQUIRED_FRACTION = 1
 /** How many mystery shapes per activity run (picked from LEVEL3_TRACE_ROUNDS). */
 export const LEVEL3_ROUNDS_PER_RUN = 3
 
+import type { QuizQuestion } from "@/lib/level-data"
+
+export type Level3QuizQuestion = {
+  id: string
+  question: string
+  options: [string, string, string]
+  correct: 0 | 1 | 2
+}
+
+/** Full pool — each quiz run picks LEVEL3_QUIZ_PER_SESSION at random. */
+export const LEVEL3_QUIZ_POOL: Level3QuizQuestion[] = [
+  {
+    id: "what-traced",
+    question: "What did we just trace to find the hidden picture?",
+    options: ["The colors", "The outside edge (outline)", "The background"],
+    correct: 1,
+  },
+  {
+    id: "draw-ball-first",
+    question: "If you want to draw a ball, what part do you usually draw first?",
+    options: ["The outside edge", "The shadow", "The middle"],
+    correct: 0,
+  },
+  {
+    id: "edge-word",
+    question: "What is another word for the edge of a shape?",
+    options: ["The inside", "The outline", "The center"],
+    correct: 1,
+  },
+  {
+    id: "house-edge",
+    question: "When we trace the edge of a house, what are we drawing?",
+    options: ["The shape of the house", "The people inside", "The color of the roof"],
+    correct: 0,
+  },
+  {
+    id: "dot-placement",
+    question: "Where do the tracing dots go when we play this game?",
+    options: ["Right in the middle", "All over the place", "Around the outside edge"],
+    correct: 2,
+  },
+  {
+    id: "butterfly-outline",
+    question: "If you only see the outline of a butterfly, can you still guess what it is?",
+    options: [
+      "Yes, because of its shape",
+      "No, you need to see the colors",
+      "Only if it is flying",
+    ],
+    correct: 0,
+  },
+]
+
+export const LEVEL3_QUIZ_PER_SESSION = 3
+
+/** Pass when the kid gets at least 2 of 3 correct. */
+export const LEVEL3_QUIZ_PASS_COUNT = 2
+
 export const LEVEL3_QUIZ_PASS_PERCENT = 67
 
-export const LEVEL3_QUIZ = [
-  {
-    question: "What were you tracing on the mystery shape?",
-    options: ["The edges and outlines", "The colorful middle", "Hidden words", "The background"],
-    correct: 0,
-  },
-  {
-    question: "What is edge detection?",
-    options: [
-      "Finding the outlines where shapes meet",
-      "Mixing paint colors",
-      "Counting how many stars",
-      "Turning up the volume",
-    ],
-    correct: 0,
-  },
-  {
-    question: "What happens when you trace every dot?",
-    options: [
-      "The colorful picture is revealed!",
-      "The screen goes blank",
-      "A new planet unlocks",
-      "The dots disappear forever",
-    ],
-    correct: 0,
-  },
-] as const
+/** Pick `count` random quiz questions without repeats. */
+export function getRandomLevel3Quiz(count = LEVEL3_QUIZ_PER_SESSION): Level3QuizQuestion[] {
+  const pool = [...LEVEL3_QUIZ_POOL]
+  const picked: Level3QuizQuestion[] = []
+  while (picked.length < count && pool.length > 0) {
+    const index = Math.floor(Math.random() * pool.length)
+    picked.push(pool.splice(index, 1)[0])
+  }
+  return picked
+}
+
+/** Map Level 3 pool items into shared LevelQuiz `text_choice` format. */
+export function level3QuizToQuizQuestions(questions: Level3QuizQuestion[]): QuizQuestion[] {
+  return questions.map((q) => ({
+    type: "text_choice" as const,
+    question: q.question,
+    options: q.options.map((label, i) => ({
+      label,
+      correct: i === q.correct,
+    })),
+  }))
+}
 
 /** Pick `count` random trace rounds without repeats. */
 export function getRandomLevel3Rounds(count = LEVEL3_ROUNDS_PER_RUN): Level3TraceRound[] {

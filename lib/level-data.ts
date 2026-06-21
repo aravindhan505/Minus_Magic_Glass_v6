@@ -46,10 +46,17 @@ export type VisualChoiceTransform = "rotate90" | "flipH" | "invert" | "tilt"
 
 export type VisualChoiceOption = {
   imageSrc: string
+  /** Second figure for side-by-side pair options (Level 4) */
+  imageSrcRight?: string
   label: string
   correct: boolean
   /** CSS transform preview for CV transformation quiz items */
   transform?: VisualChoiceTransform
+}
+
+export type TextChoiceOption = {
+  label: string
+  correct: boolean
 }
 
 export type QuizQuestion =
@@ -57,6 +64,11 @@ export type QuizQuestion =
       type: "visual_choice"
       question: string
       options: VisualChoiceOption[]
+    }
+  | {
+      type: "text_choice"
+      question: string
+      options: TextChoiceOption[]
     }
   | {
       type: "hands_on"
